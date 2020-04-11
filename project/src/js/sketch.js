@@ -1,5 +1,5 @@
 
-let numNodes = 1;
+let numNodes = 7;
 let nodes = [];
 let selectedNode = 0;
 
@@ -19,6 +19,13 @@ let filter;
 let btnPlay;
 let btnRecord;
 
+// Global view parameters
+let view_max_offset = 1000;
+let view_min_offset = 0;
+let view_x_offset = 0;
+let view_y_offset = 0;
+let view_scale = 0;
+
 
 
 function setup() {
@@ -28,31 +35,81 @@ function setup() {
     myCanvas.parent('canvas-container');
     background(COLOR_BACKGROUND);
 
-    // Create Nodes
-    for (let i=0; i<numNodes; i++) {
-        nodes[i] = new Node(width / 2, height / 2, NODE_SIZE);
-        nodes[i].connectSynth(filter);
-    }
-
-
-    // Setup UI
-    setupUI();
+    view_max_offset = height;
+    view_min_offset = -height;
 
     // Tone Setup
     setupTone();
+
+    // Create Nodes
+    createNodes(numNodes, 100);
+
+    // Setup UI
+    setupUI();
 
 }
 
 
 function draw() {
 
+
     background(COLOR_BACKGROUND);
 
+    updateView();
+
     for (let i=0; i<numNodes; i++)
-        nodes[i].draw();
+        nodes[i].draw(view_x_offset, view_y_offset);
+}
+
+
+/*
+ * Creates and adds nodes to the view such that they dont overlap.
+ */
+function createNodes(numNodes, minInterNodeDist=0) {
+    let totalInterNodeDistance = NODE_SIZE * 2 + minInterNodeDist;
+    let view_width = view_max_offset - view_min_offset;
+    let view_height = view_max_offset - view_min_offset;
+
+    // Add first node
+    let new_x = random(NODE_SIZE, view_width - NODE_SIZE);
+    let new_y = random(NODE_SIZE, view_height - NODE_SIZE);
+    nodes.push(new Node(new_x, new_y, NODE_SIZE));
+
+    while (nodes.length < numNodes) {
+        let overlap = false;
+        new_x = random(NODE_SIZE, view_width - NODE_SIZE);
+        new_y = random(NODE_SIZE, view_height - NODE_SIZE);
+
+        for (let j=0; j<nodes.length; j++) { // Check for overlap with all previous nodes
+            overlap = dist(new_x, new_y, nodes[j].x, nodes[j].y) < totalInterNodeDistance;
+            if (overlap)
+                break;
+        }
+        if (!overlap) {
+            nodes.push(new Node(new_x, new_y, NODE_SIZE));
+        }
+    }
 
 }
 
+/*
+ *  Handles scrolling of the canvas. Updates view_x_offset and view_y_offset.
+ */
+function updateView() {
+    if (mouseX > width - VIEW_SCROLL_MARGIN) { // right
+        view_x_offset = Math.max(view_min_offset, view_x_offset-VIEW_SCROLL_SPEED);
+    }
+    if (mouseX < VIEW_SCROLL_MARGIN) { //left
+        view_x_offset = Math.min(view_max_offset, view_x_offset+VIEW_SCROLL_SPEED);
+    }
+    if (mouseY > height-VIEW_SCROLL_MARGIN) { // bottom
+        view_y_offset = Math.max(view_min_offset, view_y_offset-VIEW_SCROLL_SPEED);
+    }
+    if (mouseY < VIEW_SCROLL_MARGIN) { // top
+        view_y_offset = Math.min(view_max_offset, view_y_offset+VIEW_SCROLL_SPEED);
+    }
+    //console.log('scroll: ' + view_x_offset + " " + view_y_offset);
+}
 
 
 function setupTone() {

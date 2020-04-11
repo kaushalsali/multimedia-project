@@ -72,10 +72,12 @@ class Node {
 
     }
 
-    draw() {
-        translate(this.x, this.y);
+    draw(view_x_offset=0, view_y_offset=0) {
+        push();
+        translate(this.x + view_x_offset, this.y + view_y_offset);
         strokeWeight(2);
         stroke(0);
+        ellipseMode(RADIUS);
 
         if (this.numSamples === 0) {
             fill(COLOR_NO_SAMPLE);
@@ -91,7 +93,7 @@ class Node {
             }
         }
 
-        ellipseMode(RADIUS);
+
         strokeWeight(2);
         stroke(0);
         fill(COLOR_NODE_FACE);
@@ -113,7 +115,7 @@ class Node {
         for (let i=1; i<numCircles; i++)
             ellipse(0, 0,  size - (size/numCircles)*i);
 
-
+        pop();
     }
 
 

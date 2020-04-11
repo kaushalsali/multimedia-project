@@ -1,8 +1,11 @@
+// View paramerters
+const VIEW_SCROLL_SPEED = 5;
+const VIEW_SCROLL_MARGIN = 50;
 
 
 // Node
-NODE_SIZE = 120;
-MAX_SAMPLES = 64;
+const NODE_SIZE = 120;
+const MAX_SAMPLES = 64;
 
 // Colors
 const COLOR_BACKGROUND = [30, 30, 30];
