@@ -28,18 +28,17 @@ function setup() {
     myCanvas.parent('canvas-container');
     background(COLOR_BACKGROUND);
 
+    // Tone Setup
+    setupTone();
+
     // Create Nodes
     for (let i=0; i<numNodes; i++) {
         nodes[i] = new Node(width / 2, height / 2, NODE_SIZE);
         nodes[i].connectSynth(filter);
     }
 
-
     // Setup UI
     setupUI();
-
-    // Tone Setup
-    setupTone();
 
 }
 
