@@ -1,5 +1,5 @@
 
-let numNodes = 7;
+let numNodes = 4;
 let nodes = [];
 let selectedNode = 0;
 
@@ -20,10 +20,12 @@ let btnPlay;
 let btnRecord;
 
 // Global view parameters
-let view_max_offset = 1000;
-let view_min_offset = 0;
-let view_x_offset = 0;
-let view_y_offset = 0;
+let view_max_x_offset = 1000;
+let view_min_x_offset = 0;
+let view_max_y_offset = 1000;
+let view_min_y_offset = 0;
+let viewOffsetX = 0;
+let viewOffsetY = 0;
 let view_scale = 0;
 
 
@@ -35,14 +37,16 @@ function setup() {
     myCanvas.parent('canvas-container');
     background(COLOR_BACKGROUND);
 
-    view_max_offset = height;
-    view_min_offset = -height;
+    view_max_x_offset = width/2;
+    view_min_x_offset = -width/2;
+    view_max_y_offset = height/2;
+    view_min_y_offset = -height/2;
 
     // Tone Setup
     setupTone();
 
     // Create Nodes
-    createNodes(numNodes, 100);
+    createNodes(numNodes, MIN_INTER_NODE_DIST);
 
     // Setup UI
     setupUI();
@@ -58,7 +62,7 @@ function draw() {
     updateView();
 
     for (let i=0; i<numNodes; i++)
-        nodes[i].draw(view_x_offset, view_y_offset);
+        nodes[i].draw(viewOffsetX, viewOffsetY);
 }
 
 
@@ -67,18 +71,13 @@ function draw() {
  */
 function createNodes(numNodes, minInterNodeDist=0) {
     let totalInterNodeDistance = NODE_SIZE * 2 + minInterNodeDist;
-    let view_width = view_max_offset - view_min_offset;
-    let view_height = view_max_offset - view_min_offset;
-
-    // Add first node
-    let new_x = random(NODE_SIZE, view_width - NODE_SIZE);
-    let new_y = random(NODE_SIZE, view_height - NODE_SIZE);
-    nodes.push(new Node(new_x, new_y, NODE_SIZE));
+    let viewWidth = view_max_x_offset - view_min_x_offset;
+    let viewHeight = view_max_y_offset - view_min_y_offset;
 
     while (nodes.length < numNodes) {
         let overlap = false;
-        new_x = random(NODE_SIZE, view_width - NODE_SIZE);
-        new_y = random(NODE_SIZE, view_height - NODE_SIZE);
+        new_x = random(NODE_SIZE, viewWidth - NODE_SIZE);
+        new_y = random(NODE_SIZE, viewHeight - NODE_SIZE);
 
         for (let j=0; j<nodes.length; j++) { // Check for overlap with all previous nodes
             overlap = dist(new_x, new_y, nodes[j].x, nodes[j].y) < totalInterNodeDistance;
@@ -93,22 +92,24 @@ function createNodes(numNodes, minInterNodeDist=0) {
 }
 
 /*
- *  Handles scrolling of the canvas. Updates view_x_offset and view_y_offset.
+ *  Handles scrolling of the canvas. Updates viewOffsetX and viewOffsetY.
  */
 function updateView() {
+    if (mouseX === 0 && mouseY === 0) // Hack to avoid scrolling when page is reloaded.
+        return;
     if (mouseX > width - VIEW_SCROLL_MARGIN) { // right
-        view_x_offset = Math.max(view_min_offset, view_x_offset-VIEW_SCROLL_SPEED);
+        viewOffsetX = Math.max(view_min_x_offset, viewOffsetX-VIEW_SCROLL_SPEED);
     }
     if (mouseX < VIEW_SCROLL_MARGIN) { //left
-        view_x_offset = Math.min(view_max_offset, view_x_offset+VIEW_SCROLL_SPEED);
+        viewOffsetX = Math.min(view_max_x_offset, viewOffsetX+VIEW_SCROLL_SPEED);
     }
     if (mouseY > height-VIEW_SCROLL_MARGIN) { // bottom
-        view_y_offset = Math.max(view_min_offset, view_y_offset-VIEW_SCROLL_SPEED);
+        viewOffsetY = Math.max(view_min_y_offset, viewOffsetY-VIEW_SCROLL_SPEED);
     }
     if (mouseY < VIEW_SCROLL_MARGIN) { // top
-        view_y_offset = Math.min(view_max_offset, view_y_offset+VIEW_SCROLL_SPEED);
+        viewOffsetY = Math.min(view_max_y_offset, viewOffsetY+VIEW_SCROLL_SPEED);
     }
-    //console.log('scroll: ' + view_x_offset + " " + view_y_offset);
+    //console.log('scroll: ' + viewOffsetX + " " + viewOffsetY);
 }
 
 

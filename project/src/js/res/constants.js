@@ -6,6 +6,7 @@ const VIEW_SCROLL_MARGIN = 50;
 // Node
 const NODE_SIZE = 120;
 const MAX_SAMPLES = 64;
+const MIN_INTER_NODE_DIST = 100;
 
 // Colors
 const COLOR_BACKGROUND = [30, 30, 30];
