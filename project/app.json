@@ -1,0 +1,22 @@
+{
+  "name": "Multimedia-Project",
+  "description": "Georgia Institute Technology - MUSI 6104, Spring 2020",
+  "website": "https://github.com/kaushalsali/multimedia-project",
+  "repository": "https://github.com/kaushalsali/multimedia-project",
+  "logo": "",
+  "success_url": "/",
+  "keywords": [
+    "node",
+    "express",
+    "socket.io",
+    "realtime",
+    "websocket"
+  ],
+  "scripts": {
+  },
+  "addons": [
+  ],
+  "env": {
+    "BUILDPACK_URL": "https://github.com/heroku/heroku-buildpack-nodejs"
+  }
+}
