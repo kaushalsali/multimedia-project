@@ -1,8 +1,4 @@
 
-let numNodes = 4;
-let nodes = [];
-let selectedNode = 0;
-
 // State
 let isPlaying = false;
 let isRecording = false;
@@ -28,6 +24,9 @@ let viewOffsetX = 0;
 let viewOffsetY = 0;
 let view_scale = 0;
 
+// Node parameters
+let nodeManager = null;
+
 
 
 function setup() {
@@ -37,6 +36,7 @@ function setup() {
     myCanvas.parent('canvas-container');
     background(COLOR_BACKGROUND);
 
+    // Set view limits
     view_max_x_offset = width/2;
     view_min_x_offset = -width/2;
     view_max_y_offset = height/2;
@@ -46,7 +46,8 @@ function setup() {
     setupTone();
 
     // Create Nodes
-    createNodes(numNodes, MIN_INTER_NODE_DIST);
+    nodeManager = new NodeManager();
+    addMultipleNodes(TEMP_NUM_NODES);
 
     // Setup UI
     setupUI();
@@ -56,39 +57,48 @@ function setup() {
 
 function draw() {
 
-
     background(COLOR_BACKGROUND);
 
     updateView();
 
-    for (let i=0; i<numNodes; i++)
-        nodes[i].draw(viewOffsetX, viewOffsetY);
+    nodeManager.drawNodes(viewOffsetX, viewOffsetY);
 }
 
 
 /*
  * Creates and adds nodes to the view such that they dont overlap.
  */
-function createNodes(numNodes, minInterNodeDist=0) {
-    let totalInterNodeDistance = NODE_SIZE * 2 + minInterNodeDist;
+function addMultipleNodes(numNodes) {
+    let __temp_id = 0; //TODO: Properly set id later.
+    for (let i=0; i<numNodes; i++) {
+        addNode(__temp_id++);
+    }
+}
+
+function addNode(id) {
     let viewWidth = view_max_x_offset - view_min_x_offset;
     let viewHeight = view_max_y_offset - view_min_y_offset;
+    let totalInterNodeDistance = NODE_SIZE * 2 + MIN_INTER_NODE_DIST;
+    let nodes = nodeManager.getAllNodes();
+    let newX, newY;
+    let overlap = false;
+    let added = false;
 
-    while (nodes.length < numNodes) {
-        let overlap = false;
-        new_x = random(NODE_SIZE, viewWidth - NODE_SIZE);
-        new_y = random(NODE_SIZE, viewHeight - NODE_SIZE);
+    while (!added) { // Possibility of infinite loop !!
+        newX = random(NODE_SIZE, viewWidth - NODE_SIZE);
+        newY = random(NODE_SIZE, viewHeight - NODE_SIZE);
 
-        for (let j=0; j<nodes.length; j++) { // Check for overlap with all previous nodes
-            overlap = dist(new_x, new_y, nodes[j].x, nodes[j].y) < totalInterNodeDistance;
+        // Check for overlap with all existing nodes
+        for (let j=0; j<nodes.length; j++) {
+            overlap = dist(newX, newY, nodes[j].x, nodes[j].y) < totalInterNodeDistance;
             if (overlap)
                 break;
         }
         if (!overlap) {
-            nodes.push(new Node(new_x, new_y, NODE_SIZE));
+            nodeManager.createNode(id, newX, newY, NODE_SIZE);
+            added = true;
         }
     }
-
 }
 
 /*

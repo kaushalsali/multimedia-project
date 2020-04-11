@@ -1,7 +1,50 @@
 
+class NodeManager {
+    constructor() {
+        this.nodes = {};
+        this.selectedNode = 0;
+    }
+
+    getNumNodes() {
+        return Object.keys(this.nodes).length;
+    }
+
+    getNode(nodeId) {
+        return this.nodes[nodeId];
+    }
+
+    getAllNodes() {
+        return Object.values(this.nodes);
+    }
+
+    createNode(nodeId, x, y, size) {
+        if (!(nodeId in Object.keys(this.nodes)))
+            this.nodes[nodeId] = new Node(nodeId, x, y, size);
+        else
+            console.log('ERROR: Node with id: ' + nodeId + ' already exists.')
+    }
+
+    deleteNode(nodeId) {
+        if (nodeId in Object.keys(this.nodes))
+            delete this.nodes[nodeId];
+    }
+
+
+    drawNodes(xOffset, yOffset) {
+        for (let nodeId in this.nodes) {
+            if (this.nodes.hasOwnProperty(nodeId))
+                this.nodes[nodeId].draw(xOffset, yOffset);
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+
 class Node {
 
-    constructor(x, y, size){
+    constructor(id, x, y, size) {
+        this.id = id;
         this.x = x;
         this.y = y;
         this.size = size;
@@ -13,6 +56,10 @@ class Node {
 
         this.synth = new NodeSynth();
         this.interval = 0.3;
+    }
+
+    getId() {
+        return this.id;
     }
 
     setNodeFaceColor(colorValues) {
@@ -72,16 +119,16 @@ class Node {
 
     }
 
-    draw(view_x_offset=0, view_y_offset=0) {
+    draw(xOffset=0, yOffset=0) {
         push();
-        translate(this.x + view_x_offset, this.y + view_y_offset);
+        translate(this.x + xOffset, this.y + yOffset);
         strokeWeight(2);
         stroke(0);
         ellipseMode(RADIUS);
 
         if (this.numSamples === 0) {
             fill(COLOR_NO_SAMPLE);
-            ellipse(0, 0,  this.size);
+            ellipse(0, 0, this.size);
         }
         else {
             for (let i = 0; i < this.numSamples; i++) {
@@ -132,6 +179,8 @@ class Node {
     }
 }
 
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
 
 class NodeSynth {
     constructor() {

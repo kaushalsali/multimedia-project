@@ -8,6 +8,9 @@ const NODE_SIZE = 120;
 const MAX_SAMPLES = 64;
 const MIN_INTER_NODE_DIST = 100;
 
+//Temp variables //TODO: Delete later
+const TEMP_NUM_NODES = 4;
+
 // Colors
 const COLOR_BACKGROUND = [30, 30, 30];
 let alpha = 200;
@@ -30,4 +33,4 @@ const SYNTH_CONFIG = {
         sustain  : 0.5,
         release  : 3,
     }
-}
+};
