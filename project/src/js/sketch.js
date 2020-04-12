@@ -66,13 +66,15 @@ function draw() {
     translate(-width/2, -height/2);
 
     // Translate view
-    updateView();
-
-    nodeManager.drawNodes(viewOffsetX, viewOffsetY);
+    updateViewTranslationParameters();
+    push();
+    translate(viewOffsetX, viewOffsetY);
+    nodeManager.drawNodes();
+    pop();
 
 }
 
-// Overload mousePressed of p5
+// Overloads mousePressed of p5.
 function mousePressed() { //TODO: Remove if multiple nodes per user are not allowed.
     let nodes = nodeManager.getAllNodes();
     for (let node of nodes) {
@@ -82,11 +84,32 @@ function mousePressed() { //TODO: Remove if multiple nodes per user are not allo
 }
 
 /*
- * Overloads mouseWheel of p5
- * Controls view scaling
+ * Overloads mouseWheel of p5.
+ * Controls view scaling.
  */
 function mouseWheel(event) {
     viewScale = Math.min(Math.max(viewScale + event.delta * VIEW_SCALE_FACTOR, VIEW_SCALE_MIN), VIEW_SCALE_MAX);
+}
+
+
+/*
+ *  Handles translation of the canvas. Updates viewOffsetX and viewOffsetY.
+ */
+function updateViewTranslationParameters() {
+    if (mouseX === 0 && mouseY === 0) // Hack to avoid translation when page is reloaded.
+        return;
+    if (mouseX > width - VIEW_TRANSLATION_MARGIN) { // right
+        viewOffsetX = Math.max(view_min_x_offset, viewOffsetX-VIEW_TRANSLATION_SPEED);
+    }
+    if (mouseX < VIEW_TRANSLATION_MARGIN) { //left
+        viewOffsetX = Math.min(view_max_x_offset, viewOffsetX+VIEW_TRANSLATION_SPEED);
+    }
+    if (mouseY > height-VIEW_TRANSLATION_MARGIN) { // bottom
+        viewOffsetY = Math.max(view_min_y_offset, viewOffsetY-VIEW_TRANSLATION_SPEED);
+    }
+    if (mouseY < VIEW_TRANSLATION_MARGIN) { // top
+        viewOffsetY = Math.min(view_max_y_offset, viewOffsetY+VIEW_TRANSLATION_SPEED);
+    }
 }
 
 
@@ -126,31 +149,6 @@ function addNode(id) {
             added = true;
         }
     }
-}
-
-/*
- *  Handles scrolling of the canvas. Updates viewOffsetX and viewOffsetY.
- */
-function updateView() {
-    // View Translation
-    if (mouseX === 0 && mouseY === 0) // Hack to avoid scrolling when page is reloaded.
-        return;
-    if (mouseX > width - VIEW_SCROLL_MARGIN) { // right
-        viewOffsetX = Math.max(view_min_x_offset, viewOffsetX-VIEW_SCROLL_SPEED);
-    }
-    if (mouseX < VIEW_SCROLL_MARGIN) { //left
-        viewOffsetX = Math.min(view_max_x_offset, viewOffsetX+VIEW_SCROLL_SPEED);
-    }
-    if (mouseY > height-VIEW_SCROLL_MARGIN) { // bottom
-        viewOffsetY = Math.max(view_min_y_offset, viewOffsetY-VIEW_SCROLL_SPEED);
-    }
-    if (mouseY < VIEW_SCROLL_MARGIN) { // top
-        viewOffsetY = Math.min(view_max_y_offset, viewOffsetY+VIEW_SCROLL_SPEED);
-    }
-    //console.log('scroll: ' + viewOffsetX + " " + viewOffsetY);
-
-    // View Scaling
-
 }
 
 

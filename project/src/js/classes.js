@@ -36,10 +36,10 @@ class NodeManager {
             console.log('ERROR: Node with id: ' + nodeId + ' does not exists.')
     }
 
-    drawNodes(xOffset, yOffset) {
+    drawNodes() {
         for (let nodeId in this.nodes) {
             if (this.nodes.hasOwnProperty(nodeId))
-                this.nodes[nodeId].draw(xOffset, yOffset);
+                this.nodes[nodeId].draw();
         }
     }
 
@@ -145,9 +145,9 @@ class Node {
 
     }
 
-    draw(xOffset=0, yOffset=0) {
+    draw() {
         push();
-        translate(this.x + xOffset, this.y + yOffset);
+        translate(this.x, this.y);
         strokeWeight(2);
         stroke(0);
         ellipseMode(RADIUS);
