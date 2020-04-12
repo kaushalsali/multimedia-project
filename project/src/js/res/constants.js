@@ -23,14 +23,27 @@ const COLOR_NO_SAMPLE = [51, 37, 0];
 const COLOR_BLACK = [0, 0, 0];
 
 
-const SYNTH_CONFIG = {
-    oscillator  : {
-        type  : "square"
-    }  ,
-    envelope  : {
-        attack  : 0.0001 ,
-        decay  : 0.001 ,
-        sustain  : 0.5,
-        release  : 3,
+const SYNTH_CONFIGS = {
+    "square": {
+        oscillator  : {
+            type  : "square"
+        }  ,
+        envelope  : {
+            attack  : 0.0001 ,
+                decay  : 0.001 ,
+                sustain  : 0.5,
+                release  : 3,
+        }
+    },
+    "sine": {
+        oscillator  : {
+            type  : "sine"
+        }  ,
+        envelope  : {
+            attack  : 0.0001 ,
+            decay  : 0.001 ,
+            sustain  : 0.5,
+            release  : 3,
+        }
     }
 };

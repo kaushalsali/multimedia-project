@@ -49,8 +49,7 @@ function setup() {
     // Create Nodes
     nodeManager = new NodeManager();
     addMultipleNodes(TEMP_NUM_NODES);
-
-
+    
     // Setup UI
     setupUI();
 
@@ -64,6 +63,15 @@ function draw() {
     updateView();
 
     nodeManager.drawNodes(viewOffsetX, viewOffsetY);
+}
+
+
+function mousePressed() {
+    let nodes = nodeManager.getAllNodes();
+    for (let node of nodes) {
+        if (dist(mouseX, mouseY, node.x, node.y) < NODE_SIZE)
+            nodeManager.setSelectedNode(node.getId());
+    }
 }
 
 
@@ -97,7 +105,8 @@ function addNode(id) {
                 break;
         }
         if (!overlap) {
-            nodeManager.createNode(id, newX, newY, NODE_SIZE);
+            let synths = Object.keys(SYNTH_CONFIGS);
+            nodeManager.createNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS[synths[id%2]]); //TODO: Replace Temp Synth initialization with player.
             nodeManager.connectNode(id, nodeConnectionPoint);
             added = true;
         }
@@ -147,7 +156,7 @@ function setupTone() {
 
     filter = new Tone.Filter({
         type  : "lowpass",
-        frequency  : 700 ,
+        frequency  : 1700 ,
         rolloff  : -12 ,
         Q  : 1 ,
         gain  : 0
@@ -223,11 +232,16 @@ document.addEventListener('keydown', function(event) {
         if (event.keyCode === 65) { // A
             nodeManager.getSelectedNode().addSample("C4");
         }
+        if (event.keyCode === 83) { // S
+            nodeManager.getSelectedNode().addSample("E4");
+        }
+        if (event.keyCode === 68) { // D
+            nodeManager.getSelectedNode().addSample("G4");
+        }
     }
 
     if (!isPlaying) { // Not playing
         if (event.keyCode === 70) {     // F - STEP
-            console.log('asd');
             nodes[selectedNode].step();
         }
     }

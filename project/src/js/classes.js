@@ -1,5 +1,6 @@
 
 class NodeManager {
+
     constructor() {
         this.nodes = {};
         this.selectedNodeId = 0;
@@ -21,9 +22,9 @@ class NodeManager {
         return Object.keys(this.nodes);
     }
 
-    createNode(nodeId, x, y, size) {
+    createNode(nodeId, x, y, size, synth_config) {
         if (!(nodeId in Object.keys(this.nodes)))
-            this.nodes[nodeId] = new Node(nodeId, x, y, size);
+            this.nodes[nodeId] = new Node(nodeId, x, y, size, synth_config);
         else
             console.log('ERROR: Node with id: ' + nodeId + ' already exists.')
     }
@@ -31,8 +32,9 @@ class NodeManager {
     deleteNode(nodeId) {
         if (nodeId in Object.keys(this.nodes))
             delete this.nodes[nodeId];
+        else
+            console.log('ERROR: Node with id: ' + nodeId + ' does not exists.')
     }
-
 
     drawNodes(xOffset, yOffset) {
         for (let nodeId in this.nodes) {
@@ -67,7 +69,7 @@ class NodeManager {
 
 class Node {
 
-    constructor(id, x, y, size) {
+    constructor(id, x, y, size, synth_config) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -78,7 +80,7 @@ class Node {
         this.sectorAngle = 2 * PI / this.numSamples;
         this.nodeFaceColor = COLOR_NODE_FACE;
 
-        this.synth = new NodeSynth();
+        this.synth = new NodeSynth(synth_config);
         this.interval = 0.3;
     }
 
@@ -207,8 +209,9 @@ class Node {
 // ----------------------------------------------------------------------------------------------------------------
 
 class NodeSynth {
-    constructor() {
-        this.synth = new Tone.Synth(SYNTH_CONFIG);
+
+    constructor(synth_config) {
+        this.synth = new Tone.Synth(synth_config);
     }
 
     connect(where) {
