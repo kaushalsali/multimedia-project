@@ -1,6 +1,9 @@
 // View paramerters
 const VIEW_SCROLL_SPEED = 5;
 const VIEW_SCROLL_MARGIN = 50;
+const VIEW_SCALE_FACTOR = 0.001;
+const VIEW_SCALE_MAX = 3;
+const VIEW_SCALE_MIN = 0.2;
 
 
 // Node

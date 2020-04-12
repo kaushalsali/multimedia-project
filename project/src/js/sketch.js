@@ -23,7 +23,7 @@ let view_max_y_offset = 1000;
 let view_min_y_offset = 0;
 let viewOffsetX = 0;
 let viewOffsetY = 0;
-let view_scale = 0; //TODO: not yet implemented.
+let viewScale = 1;
 
 // Node parameters
 let nodeManager = null;
@@ -60,13 +60,20 @@ function draw() {
 
     background(COLOR_BACKGROUND);
 
+    // Scale view
+    translate(width/2, height/2);
+    scale(viewScale);
+    translate(-width/2, -height/2);
+
+    // Translate view
     updateView();
 
     nodeManager.drawNodes(viewOffsetX, viewOffsetY);
+
 }
 
-
-function mousePressed() {
+// Overload mousePressed of p5
+function mousePressed() { //TODO: Remove if multiple nodes per user are not allowed.
     let nodes = nodeManager.getAllNodes();
     for (let node of nodes) {
         if (dist(mouseX, mouseY, node.x, node.y) < NODE_SIZE)
@@ -74,10 +81,15 @@ function mousePressed() {
     }
 }
 
-
 /*
- * Creates and adds nodes to the view such that they dont overlap.
+ * Overloads mouseWheel of p5
+ * Controls view scaling
  */
+function mouseWheel(event) {
+    viewScale = Math.min(Math.max(viewScale + event.delta * VIEW_SCALE_FACTOR, VIEW_SCALE_MIN), VIEW_SCALE_MAX);
+}
+
+
 function addMultipleNodes(numNodes) {
     let __temp_id = 0; //TODO: Properly set id later.
     for (let i=0; i<numNodes; i++) {
@@ -85,6 +97,9 @@ function addMultipleNodes(numNodes) {
     }
 }
 
+/*
+ * Creates and adds a node to the view such that it doesn't overlap with existing nodes.
+ */
 function addNode(id) {
     let viewWidth = view_max_x_offset - view_min_x_offset;
     let viewHeight = view_max_y_offset - view_min_y_offset;
@@ -117,6 +132,7 @@ function addNode(id) {
  *  Handles scrolling of the canvas. Updates viewOffsetX and viewOffsetY.
  */
 function updateView() {
+    // View Translation
     if (mouseX === 0 && mouseY === 0) // Hack to avoid scrolling when page is reloaded.
         return;
     if (mouseX > width - VIEW_SCROLL_MARGIN) { // right
@@ -132,6 +148,9 @@ function updateView() {
         viewOffsetY = Math.min(view_max_y_offset, viewOffsetY+VIEW_SCROLL_SPEED);
     }
     //console.log('scroll: ' + viewOffsetX + " " + viewOffsetY);
+
+    // View Scaling
+
 }
 
 

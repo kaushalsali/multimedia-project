@@ -152,6 +152,7 @@ class Node {
         stroke(0);
         ellipseMode(RADIUS);
 
+        // Node sample tray
         if (this.numSamples === 0) {
             fill(COLOR_NO_SAMPLE);
             ellipse(0, 0, this.size);
@@ -166,25 +167,25 @@ class Node {
             }
         }
 
-
+        // Node face
         strokeWeight(2);
         stroke(0);
         fill(COLOR_NODE_FACE);
-        ellipse(0, 0,  this.size - 20);
+        ellipse(0, 0,  this.size * 0.85);
         fill(this.nodeFaceColor);
-        ellipse(0, 0,  this.size - 20);
+        ellipse(0, 0,  this.size * 0.85);
 
         fill([0,0,0,0]);
         strokeWeight(0.3);
 
-        let gray = 0.2125 * this.nodeFaceColor[0] + 0.7154 * this.nodeFaceColor[1] + 0.0721* this.nodeFaceColor[2]; //0.0721
-
+        // Inner gray circles
+        let gray = 0.2125 * this.nodeFaceColor[0] + 0.7154 * this.nodeFaceColor[1] + 0.0721 * this.nodeFaceColor[2]; //0.0721
         if (gray > 100)
             stroke(0);
         else
             stroke(100);
         let numCircles = 10;
-        let size = this.size - 20;
+        let size = this.size  * 0.85;
         for (let i=1; i<numCircles; i++)
             ellipse(0, 0,  size - (size/numCircles)*i);
 
