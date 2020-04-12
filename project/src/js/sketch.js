@@ -10,6 +10,7 @@ let reverb;
 let delay;
 let vibrato;
 let filter;
+let nodeConnectionPoint;
 
 // UI
 let btnPlay;
@@ -22,7 +23,7 @@ let view_max_y_offset = 1000;
 let view_min_y_offset = 0;
 let viewOffsetX = 0;
 let viewOffsetY = 0;
-let view_scale = 0;
+let view_scale = 0; //TODO: not yet implemented.
 
 // Node parameters
 let nodeManager = null;
@@ -48,6 +49,7 @@ function setup() {
     // Create Nodes
     nodeManager = new NodeManager();
     addMultipleNodes(TEMP_NUM_NODES);
+
 
     // Setup UI
     setupUI();
@@ -96,6 +98,7 @@ function addNode(id) {
         }
         if (!overlap) {
             nodeManager.createNode(id, newX, newY, NODE_SIZE);
+            nodeManager.connectNode(id, nodeConnectionPoint);
             added = true;
         }
     }
@@ -123,6 +126,10 @@ function updateView() {
 }
 
 
+/*
+ *  Sets up the audio pipeline.
+ *  Sets global variable 'nodeConnectionPoint' to where.
+ */
 function setupTone() {
 
     masterEnv = new Tone.AmplitudeEnvelope();
@@ -149,11 +156,13 @@ function setupTone() {
     filter.connect(vibrato);
 
     Tone.Transport.scheduleRepeat((time)=>{
-        for (let i=0; i<numNodes; i++) {
-            nodes[i].step();
-        }
+        nodeManager.stepAllNodes();
     }, "8n");
     Tone.Transport.bpm.value = 60;
+
+    // Set global node connection point
+    nodeConnectionPoint = filter;
+
 }
 
 
@@ -184,7 +193,7 @@ function toggleRecord() {
     }
     else {
         btnRecord.html("Stop Adding");
-        nodes[selectedNode].clearSamples();
+        nodeManager.getSelectedNode().clearSamples();
     }
     isRecording = !isRecording;
 }
@@ -212,7 +221,7 @@ document.addEventListener('keydown', function(event) {
 
     if (isRecording) {
         if (event.keyCode === 65) { // A
-            nodes[selectedNode].addSample("C4");
+            nodeManager.getSelectedNode().addSample("C4");
         }
     }
 

@@ -2,7 +2,7 @@
 class NodeManager {
     constructor() {
         this.nodes = {};
-        this.selectedNode = 0;
+        this.selectedNodeId = 0;
     }
 
     getNumNodes() {
@@ -15,6 +15,10 @@ class NodeManager {
 
     getAllNodes() {
         return Object.values(this.nodes);
+    }
+
+    getAllNodeIds(){
+        return Object.keys(this.nodes);
     }
 
     createNode(nodeId, x, y, size) {
@@ -36,6 +40,26 @@ class NodeManager {
                 this.nodes[nodeId].draw(xOffset, yOffset);
         }
     }
+
+    stepAllNodes() {
+        for (let nodeId in this.nodes) {
+            if (this.nodes.hasOwnProperty(nodeId))
+                this.nodes[nodeId].step();
+        }
+    }
+
+    setSelectedNode(nodeId) {
+        this.selectedNodeId = nodeId;
+    }
+
+    getSelectedNode() {
+        return this.nodes[this.selectedNodeId];
+    }
+
+    connectNode(nodeId, where) {
+        this.nodes[nodeId].connectSynth(where);
+    }
+
 }
 
 // ----------------------------------------------------------------------------------------------------------------
