@@ -5,6 +5,9 @@ var url = require('url');
 var path = require('path');
 var fs = require('fs');
 
+const Timecode = require('smpte-timecode');
+var serverStartTime = Timecode(new Date());
+
 var server = http.createServer(handleRequest);
 var port = 3000;
 
@@ -43,7 +46,7 @@ function handleRequest(req, res) {
 var io = require('socket.io').listen(server);
 
 io.sockets.on('connection', function (socket) {
-  console.log("Client connected: " + socket.id);
+  console.log("Client connected: " + socket.id + " " + Timecode(new Date()).subtract(serverStartTime).toString());
    
   socket.on('disconnect', function() {
      console.log("Client " + socket.id + " has disconnected");
