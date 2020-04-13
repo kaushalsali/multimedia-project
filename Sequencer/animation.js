@@ -1,17 +1,9 @@
-function animationDraw() {
-  if (ANIM_LIGHTNING_BOOL){
+function animationDraw(currentPlaying) {
+  //console.log(currentPlaying);
+  if (currentPlaying === 'E4'){
     push();
     lightning();
     pop();
-  }
-}
-
-function animationHandler(currentPlaying) {
-  if (currentPlaying == 'E4') {
-      ANIM_LIGHTNING_BOOL = true;
-  }
-  else {
-      ANIM_LIGHTNING_BOOL = false;
   }
 }
 
@@ -27,7 +19,6 @@ function lightning() {
     // For each strike, return to the center
     pop();
     push();
-    //translate(height/2, width/2);
     // Draw maxVal lines as part of a strike.
     while (count < maxVal) {
       if (count === 0){

@@ -69,7 +69,6 @@ class Node {
 
         // Play sample
         this.playSample(this.samples[this.currentSample], this.interval);
-        animationHandler(this.samples[this.currentSample]);
     }
 
     draw() {
@@ -113,7 +112,7 @@ class Node {
         for (let i=1; i<numCircles; i++)
             ellipse(0, 0,  size - (size/numCircles)*i);
 
-        animationDraw();
+        animationDraw(this.samples[this.currentSample]);
 
         test((this.size - 25), 1);
 
