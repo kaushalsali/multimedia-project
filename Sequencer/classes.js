@@ -69,13 +69,7 @@ class Node {
 
         // Play sample
         this.playSample(this.samples[this.currentSample], this.interval);
-
-        if (this.samples[this.currentSample] == 'E4') {
-            ANIM_LIGHTNING_BOOL = true;
-        }
-        else {
-            ANIM_LIGHTNING_BOOL = false;
-        }
+        animationHandler(this.samples[this.currentSample]);
     }
 
     draw() {
@@ -119,12 +113,7 @@ class Node {
         for (let i=1; i<numCircles; i++)
             ellipse(0, 0,  size - (size/numCircles)*i);
 
-        if (ANIM_LIGHTNING_BOOL){
-          push();
-          lightning();
-          pop();
-        }
-
+        animationDraw();
 
         test((this.size - 25), 1);
 

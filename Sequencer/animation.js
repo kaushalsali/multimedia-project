@@ -1,10 +1,27 @@
+function animationDraw() {
+  if (ANIM_LIGHTNING_BOOL){
+    push();
+    lightning();
+    pop();
+  }
+}
+
+function animationHandler(currentPlaying) {
+  if (currentPlaying == 'E4') {
+      ANIM_LIGHTNING_BOOL = true;
+  }
+  else {
+      ANIM_LIGHTNING_BOOL = false;
+  }
+}
+
 function lightning() {
   let maxVal = 20;
   let count = 0;
   let len = 10;
   let numStrikes = 5;  // Max of 5, bounded by initLine
   let strike = 0;
-  let initLine = [0, 180, PI/5, -PI/2, -PI/5];
+  let initLine = [0, 255, PI, -PI/2, -PI/5];
   let randomRotate = PI/2;
   for (strike = 0; strike < numStrikes; strike++) {
     // For each strike, return to the center
