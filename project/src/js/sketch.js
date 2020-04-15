@@ -75,11 +75,16 @@ function draw() {
 }
 
 // Overloads mousePressed of p5.
-function mousePressed() { //TODO: Remove if multiple nodes per user are not allowed.
+function mousePressed() {
     let nodes = nodeManager.getAllNodes();
     for (let node of nodes) {
-        if (dist(mouseX, mouseY, node.x, node.y) < NODE_SIZE)
+        let correctedNodeX = ((node.x - width/2) * viewScale + width/2) + (viewOffsetX * viewScale) ;
+        let correctedNodeY = ((node.y - height/2) * viewScale + height/2) + (viewOffsetY * viewScale);
+        let distance = dist(mouseX, mouseY, correctedNodeX, correctedNodeY);
+        if (distance < NODE_SIZE * viewScale) {
             nodeManager.setSelectedNode(node.getId());
+            console.log('Selected Node:', node.getId());
+        }
     }
 }
 
@@ -135,7 +140,8 @@ function addNode(id) {
     while (!added) { // Possibility of infinite loop !!
         newX = random(NODE_SIZE, viewWidth - NODE_SIZE);
         newY = random(NODE_SIZE, viewHeight - NODE_SIZE);
-
+        // newX = width/2;
+        // newY = height/2;
         // Check for overlap with all existing nodes
         for (let j=0; j<nodes.length; j++) {
             overlap = dist(newX, newY, nodes[j].x, nodes[j].y) < totalInterNodeDistance;
