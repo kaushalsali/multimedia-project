@@ -51,7 +51,9 @@ class NodeManager {
     }
 
     setSelectedNode(nodeId) {
+        this.nodes[this.selectedNodeId].setSelected(false);
         this.selectedNodeId = nodeId;
+        this.nodes[this.selectedNodeId].setSelected(true);
     }
 
     getSelectedNode() {
@@ -79,6 +81,7 @@ class Node {
         this.currentSample = -1;
         this.sectorAngle = 2 * PI / this.numSamples;
         this.nodeFaceColor = COLOR_NODE_FACE;
+        this.selected = false;
 
         this.synth = new NodeSynth(synth_config);
         this.interval = 0.3;
@@ -86,6 +89,14 @@ class Node {
 
     getId() {
         return this.id;
+    }
+
+    isSelected() {
+        return this.selected;
+    }
+
+    setSelected(bool) {
+        this.selected = bool;
     }
 
     setNodeFaceColor(colorValues) {
@@ -175,15 +186,12 @@ class Node {
         fill(this.nodeFaceColor);
         ellipse(0, 0,  this.size * 0.85);
 
-        fill([0,0,0,0]);
-        strokeWeight(0.3);
-
         // Inner gray circles
-        let gray = 0.2125 * this.nodeFaceColor[0] + 0.7154 * this.nodeFaceColor[1] + 0.0721 * this.nodeFaceColor[2]; //0.0721
-        if (gray > 100)
-            stroke(0);
+        strokeWeight(1);
+        if (this.isSelected())
+            stroke(70);
         else
-            stroke(100);
+            stroke(10);
         let numCircles = 10;
         let size = this.size  * 0.85;
         for (let i=1; i<numCircles; i++)
