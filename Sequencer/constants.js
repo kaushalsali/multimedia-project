@@ -30,3 +30,10 @@ const SYNTH_CONFIG = {
         release  : 3,
     }
 }
+
+// Animation colors
+const COLOR_ANIM_BACKGROUND = [];
+const COLOR_ANIM_LIGHTNING = 'rgba(255,255,255,5)';
+
+// Animation state
+ANIM_LIGHTNING_BOOL = false;

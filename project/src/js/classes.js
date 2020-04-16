@@ -113,6 +113,9 @@ class Node {
         for (let i=1; i<numCircles; i++)
             ellipse(0, 0,  size - (size/numCircles)*i);
 
+        animationDraw(this.samples[this.currentSample]);
+
+        test((this.size - 25), 1);
 
     }
 
