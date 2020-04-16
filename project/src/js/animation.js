@@ -5,6 +5,24 @@ function animationDraw(currentPlaying) {
     lightning();
     pop();
   }
+
+  //function calls for animations with different parameters
+  //uncomment once we can test with different sounds to trigger each one
+  //circleStrobe(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,colorStrobe=COLOR_BLUES[1]);
+//circleStrobe(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=10,colorStrobe=COLOR_GREENS[2]);
+//circleStrobe(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=5,colorStrobe=COLOR_PURPLES[0]);
+//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="light",eraseCircles=true,colorRange=COLOR_BLUES);
+//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="light",eraseCircles=false,colorRange=COLOR_GREENS);
+//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="dark",eraseCircles=true,colorRange=COLOR_BLUES);
+//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="dark",eraseCircles=false,colorRange=COLOR_BLUES);
+//starRotate(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nPoints=5, rotation=-20,colorRange=COLOR_GREENS)
+//starRotate(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nPoints=6, rotation=50,colorRange=COLOR_PURPLES);
+//spiral(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,spread=1.5,colorSpiral=COLOR_BLUES[1]);
+//spiral(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,spread=3,colorSpiral=COLOR_GREENS[1]);
+//spiral(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,spread=7,colorSpiral=COLOR_PURPLES[1]);
+//vertLines(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nLines=15,colorRange=COLOR_PURPLES,direction="RL");
+//vertLines(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nLines=25,colorRange=COLOR_GREENS,direction="LR");
+//vertLines(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nLines=7,colorRange=COLOR_BLUES,direction="LR");
 }
 
 function lightning() {
