@@ -49,7 +49,7 @@ function setup() {
     // Create Nodes
     nodeManager = new NodeManager();
     addMultipleNodes(TEMP_NUM_NODES);
-    
+
     // Setup UI
     setupUI();
 

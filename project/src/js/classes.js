@@ -217,6 +217,10 @@ class Node {
         for (let i=1; i<numCircles; i++)
             ellipse(0, 0,  size - (size/numCircles)*i);
 
+        // TODO: Integrate animations
+        // animationDraw(this.samples[this.currentSample]);
+        // test((this.size - 25), 1);
+
         pop();
     }
 
