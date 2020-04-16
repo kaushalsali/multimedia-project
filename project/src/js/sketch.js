@@ -255,17 +255,59 @@ document.addEventListener('keydown', function(event) {
         if (event.keyCode === 65) { // A
             nodeManager.getSelectedNode().addSample("C4");
         }
-        if (event.keyCode === 83) { // S
+        else if (event.keyCode === 83) { // S
+            nodeManager.getSelectedNode().addSample("D4");
+        }
+        else if (event.keyCode === 68) { // D
             nodeManager.getSelectedNode().addSample("E4");
         }
-        if (event.keyCode === 68) { // D
+        else if (event.keyCode === 70) { // F
+            nodeManager.getSelectedNode().addSample("F4");
+        }
+        else if (event.keyCode === 71) { // G
             nodeManager.getSelectedNode().addSample("G4");
+        }
+        else if (event.keyCode === 72) { // H
+            nodeManager.getSelectedNode().addSample("A4");
+        }
+        else if (event.keyCode === 74) { // J
+            nodeManager.getSelectedNode().addSample("B4");
+        }
+        else if (event.keyCode === 75) { // K
+            nodeManager.getSelectedNode().addSample("C5");
+        }
+        else if (event.keyCode === 76) { // L
+            nodeManager.getSelectedNode().addSample("D5");
+        }
+        else if (event.keyCode === 186) { // ;
+            nodeManager.getSelectedNode().addSample("E5");
+        }
+        else if (event.keyCode === 87) { // W
+            nodeManager.getSelectedNode().addSample("C#4");
+        }
+        else if (event.keyCode === 69) { // E
+            nodeManager.getSelectedNode().addSample("D#4");
+        }
+        else if (event.keyCode === 84) { // T
+            nodeManager.getSelectedNode().addSample("F#4");
+        }
+        else if (event.keyCode === 89) { // Y
+            nodeManager.getSelectedNode().addSample("G#4");
+        }
+        else if (event.keyCode === 85) { // U
+            nodeManager.getSelectedNode().addSample("A#4");
+        }
+        else if (event.keyCode === 79) { // O
+            nodeManager.getSelectedNode().addSample("C#5");
+        }
+        else if (event.keyCode === 80) { // P
+            nodeManager.getSelectedNode().addSample("D#5");
         }
     }
 
     if (!isPlaying) { // Not playing
         if (event.keyCode === 70) {     // F - STEP
-            nodes[selectedNode].step();
+            nodeManager.getSelectedNode().step();
         }
     }
 });
