@@ -82,6 +82,7 @@ class Node {
         this.sectorAngle = 2 * PI / this.numSamples;
         this.nodeFaceColor = COLOR_NODE_FACE;
         this.selected = false;
+        this.direction = 1;
 
         this.synth = new NodeSynth(synth_config);
         this.interval = 0.3;
@@ -103,6 +104,10 @@ class Node {
         this.nodeFaceColor = colorValues;
     }
 
+    hasSample() {
+        return this.samples.length > 0;
+    }
+
     getSamples() {
         return this.samples;
     }
@@ -110,6 +115,7 @@ class Node {
     clearSamples() {
         this.samples = [];
         this.numSamples = 0;
+        this.currentSample = -1;
     }
 
     addSample(sample) {
@@ -146,14 +152,28 @@ class Node {
     }
 
     step() {
-        if (this.numSamples === 0)
-            this.currentSample = -1;
-        else
+        if (this.hasSample()) {
+            this.currentSample = (this.currentSample + this.direction) % this.numSamples;
+            this.playSample(this.samples[this.currentSample], this.interval);
+        }
+    }
+
+    stepForward() {
+        if (this.hasSample()) {
             this.currentSample = (this.currentSample + 1) % this.numSamples;
+            this.playSample(this.samples[this.currentSample], this.interval);
+        }
+    }
 
-        // Play sample
-        this.playSample(this.samples[this.currentSample], this.interval);
+    stepBackward() {
+        if (this.hasSample()) {
+            this.currentSample = (this.currentSample + this.numSamples - 1) % this.numSamples;
+            this.playSample(this.samples[this.currentSample], this.interval);
+        }
+    }
 
+    changeDirection() {
+        this.direction = !this.direction;
     }
 
     draw() {

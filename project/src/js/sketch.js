@@ -1,7 +1,7 @@
 
 // State
 let isPlaying = false;
-let isRecording = false;
+
 
 // Tone
 let masterEnv;
@@ -149,8 +149,8 @@ function addNode(id) {
                 break;
         }
         if (!overlap) {
-            let synths = Object.keys(SYNTH_CONFIGS);
-            nodeManager.createNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS[synths[id%2]]); //TODO: Replace Temp Synth initialization with player.
+            //let synths = Object.keys(SYNTH_CONFIGS);
+            nodeManager.createNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS['square']); //TODO: Replace Temp Synth initialization with player.
             nodeManager.connectNode(id, nodeConnectionPoint);
             added = true;
         }
@@ -210,24 +210,17 @@ function setupUI() {
     btnPlay.mousePressed(togglePlay);
     btnPlay.html("Play");
 
-    btnRecord = createButton("Add Notes");
-    btnRecord.size(btnWidth, btnHeight);
-    btnRecord.position(width/2 - btnWidth - 20, height - 150);
-    btnRecord.addClass("myButton");
-    btnRecord.mousePressed(toggleRecord);
-    btnRecord.html("Add Notes");
+    btnClear = createButton("Clear Node");
+    btnClear.size(btnWidth, btnHeight);
+    btnClear.position(width/2 - btnWidth - 20, height - 150);
+    btnClear.addClass("myButton");
+    btnClear.mousePressed(clearNode);
+    btnClear.html("Clear Node");
 
 }
 
-function toggleRecord() {
-    if (isRecording) {
-        btnRecord.html("Add Notes");
-    }
-    else {
-        btnRecord.html("Stop Adding");
-        nodeManager.getSelectedNode().clearSamples();
-    }
-    isRecording = !isRecording;
+function clearNode() {
+    nodeManager.getSelectedNode().clearSamples();
 }
 
 function togglePlay() {
@@ -245,69 +238,71 @@ function togglePlay() {
 
 document.addEventListener('keydown', function(event) {
 
-    if (event.keyCode === 80) {     // P - START TONE.JS
-        Tone.start();
-        console.log('Tone started');
-        Tone.Master.volume = -10;
-    }
+    // if (event.keyCode === 80) {     // P - START TONE.JS
+    //     Tone.start();
+    //     console.log('Tone started');
+    //     Tone.Master.volume = -10;
+    // }
 
-    if (isRecording) {
-        if (event.keyCode === 65) { // A
-            nodeManager.getSelectedNode().addSample("C4");
-        }
-        else if (event.keyCode === 83) { // S
-            nodeManager.getSelectedNode().addSample("D4");
-        }
-        else if (event.keyCode === 68) { // D
-            nodeManager.getSelectedNode().addSample("E4");
-        }
-        else if (event.keyCode === 70) { // F
-            nodeManager.getSelectedNode().addSample("F4");
-        }
-        else if (event.keyCode === 71) { // G
-            nodeManager.getSelectedNode().addSample("G4");
-        }
-        else if (event.keyCode === 72) { // H
-            nodeManager.getSelectedNode().addSample("A4");
-        }
-        else if (event.keyCode === 74) { // J
-            nodeManager.getSelectedNode().addSample("B4");
-        }
-        else if (event.keyCode === 75) { // K
-            nodeManager.getSelectedNode().addSample("C5");
-        }
-        else if (event.keyCode === 76) { // L
-            nodeManager.getSelectedNode().addSample("D5");
-        }
-        else if (event.keyCode === 186) { // ;
-            nodeManager.getSelectedNode().addSample("E5");
-        }
-        else if (event.keyCode === 87) { // W
-            nodeManager.getSelectedNode().addSample("C#4");
-        }
-        else if (event.keyCode === 69) { // E
-            nodeManager.getSelectedNode().addSample("D#4");
-        }
-        else if (event.keyCode === 84) { // T
-            nodeManager.getSelectedNode().addSample("F#4");
-        }
-        else if (event.keyCode === 89) { // Y
-            nodeManager.getSelectedNode().addSample("G#4");
-        }
-        else if (event.keyCode === 85) { // U
-            nodeManager.getSelectedNode().addSample("A#4");
-        }
-        else if (event.keyCode === 79) { // O
-            nodeManager.getSelectedNode().addSample("C#5");
-        }
-        else if (event.keyCode === 80) { // P
-            nodeManager.getSelectedNode().addSample("D#5");
-        }
+
+    if (event.keyCode === 65) { // A
+        nodeManager.getSelectedNode().addSample("C4");
+    }
+    else if (event.keyCode === 83) { // S
+        nodeManager.getSelectedNode().addSample("D4");
+    }
+    else if (event.keyCode === 68) { // D
+        nodeManager.getSelectedNode().addSample("E4");
+    }
+    else if (event.keyCode === 70) { // F
+        nodeManager.getSelectedNode().addSample("F4");
+    }
+    else if (event.keyCode === 71) { // G
+        nodeManager.getSelectedNode().addSample("G4");
+    }
+    else if (event.keyCode === 72) { // H
+        nodeManager.getSelectedNode().addSample("A4");
+    }
+    else if (event.keyCode === 74) { // J
+        nodeManager.getSelectedNode().addSample("B4");
+    }
+    else if (event.keyCode === 75) { // K
+        nodeManager.getSelectedNode().addSample("C5");
+    }
+    else if (event.keyCode === 76) { // L
+        nodeManager.getSelectedNode().addSample("D5");
+    }
+    else if (event.keyCode === 186) { // ;
+        nodeManager.getSelectedNode().addSample("E5");
+    }
+    else if (event.keyCode === 87) { // W
+        nodeManager.getSelectedNode().addSample("C#4");
+    }
+    else if (event.keyCode === 69) { // E
+        nodeManager.getSelectedNode().addSample("D#4");
+    }
+    else if (event.keyCode === 84) { // T
+        nodeManager.getSelectedNode().addSample("F#4");
+    }
+    else if (event.keyCode === 89) { // Y
+        nodeManager.getSelectedNode().addSample("G#4");
+    }
+    else if (event.keyCode === 85) { // U
+        nodeManager.getSelectedNode().addSample("A#4");
+    }
+    else if (event.keyCode === 79) { // O
+        nodeManager.getSelectedNode().addSample("C#5");
+    }
+    else if (event.keyCode === 80) { // P
+        nodeManager.getSelectedNode().addSample("D#5");
     }
 
     if (!isPlaying) { // Not playing
-        if (event.keyCode === 70) {     // F - STEP
-            nodeManager.getSelectedNode().step();
+        if (event.keyCode === 188) {     // ,
+            nodeManager.getSelectedNode().stepBackward();
+        }
+        if (event.keyCode === 190) {     // . STEP
+            nodeManager.getSelectedNode().stepForward();
         }
     }
 });
