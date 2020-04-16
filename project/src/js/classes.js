@@ -148,7 +148,8 @@ class Node {
 
 
     playSample(sample, interval) {
-        this.synth.playNote(sample, interval);
+        if (sample)
+            this.synth.playNote(sample, interval);
     }
 
     step() {

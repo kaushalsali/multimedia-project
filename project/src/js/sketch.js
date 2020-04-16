@@ -296,6 +296,9 @@ document.addEventListener('keydown', function(event) {
     else if (event.keyCode === 80) { // P
         nodeManager.getSelectedNode().addSample("D#5");
     }
+    else if (event.keyCode === 32) { // SPACE
+        nodeManager.getSelectedNode().addSample(null); // Rest
+    }
 
     if (!isPlaying) { // Not playing
         if (event.keyCode === 188) {     // ,
