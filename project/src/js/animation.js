@@ -67,6 +67,7 @@ let radiusGrowth = 1;
 function test(maxRadius, speed) {
   stroke(COLOR_ANIM_LIGHTNING);
   strokeWeight(2);
+  fill([0, 0, 0, 0]);
   circle(0, 0, (5 + radiusGrowth));
   radiusGrowth += speed;
   if (radiusGrowth >= maxRadius) {

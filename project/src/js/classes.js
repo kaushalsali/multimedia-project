@@ -220,7 +220,7 @@ class Node {
 
         // TODO: Integrate animations
         // animationDraw(this.samples[this.currentSample]);
-        // test((this.size - 25), 1);
+        // test((this.size - 25), 0.25);
 
         pop();
     }
