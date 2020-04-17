@@ -48,7 +48,9 @@ function setup() {
 
     // Create Nodes
     nodeManager = new NodeManager();
-    addMultipleNodes(TEMP_NUM_NODES);
+    addMultipleNodes(TEMP_NUM_NODES, NODE_TYPES.USER);
+    addMultipleNodes(TEMP_NUM_NODES, NODE_TYPES.REMOTE);
+
 
     // Setup UI
     setupUI();
@@ -118,17 +120,17 @@ function updateViewTranslationParameters() {
 }
 
 
-function addMultipleNodes(numNodes) {
-    let __temp_id = 0; //TODO: Properly set id later.
+let __temp_id = 0; //TODO: Properly set id later.
+function addMultipleNodes(numNodes, type) {
     for (let i=0; i<numNodes; i++) {
-        addNode(__temp_id++);
+        addNode(__temp_id++, type);
     }
 }
 
 /*
  * Creates and adds a node to the view such that it doesn't overlap with existing nodes.
  */
-function addNode(id) {
+function addNode(id, type) {
     let viewWidth = view_max_x_offset - view_min_x_offset;
     let viewHeight = view_max_y_offset - view_min_y_offset;
     let totalInterNodeDistance = NODE_SIZE * 2 + MIN_INTER_NODE_DIST;
@@ -138,6 +140,7 @@ function addNode(id) {
     let added = false;
 
     while (!added) { // Possibility of infinite loop !!
+        console.log('in addNode()');
         newX = random(NODE_SIZE, viewWidth - NODE_SIZE);
         newY = random(NODE_SIZE, viewHeight - NODE_SIZE);
         // newX = width/2;
@@ -150,7 +153,7 @@ function addNode(id) {
         }
         if (!overlap) {
             //let synths = Object.keys(SYNTH_CONFIGS);
-            nodeManager.createNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS['square']); //TODO: Replace Temp Synth initialization with player.
+            nodeManager.createNode(id, type, newX, newY, NODE_SIZE, SYNTH_CONFIGS['square']); //TODO: Replace Temp Synth initialization with player.
             nodeManager.connectNode(id, nodeConnectionPoint);
             added = true;
         }
@@ -220,7 +223,7 @@ function setupUI() {
 }
 
 function clearNode() {
-    nodeManager.getSelectedNode().clearSamples();
+    nodeManager.clearUserNode(nodeManager.getSelectedNodeId());
 }
 
 function togglePlay() {
@@ -246,66 +249,67 @@ document.addEventListener('keydown', function(event) {
 
 
     if (event.keyCode === 65) { // A
-        nodeManager.getSelectedNode().addSample("C4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C4");
     }
     else if (event.keyCode === 83) { // S
-        nodeManager.getSelectedNode().addSample("D4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D4");
     }
     else if (event.keyCode === 68) { // D
-        nodeManager.getSelectedNode().addSample("E4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"E4");
     }
     else if (event.keyCode === 70) { // F
-        nodeManager.getSelectedNode().addSample("F4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"F4");
     }
     else if (event.keyCode === 71) { // G
-        nodeManager.getSelectedNode().addSample("G4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"G4");
     }
     else if (event.keyCode === 72) { // H
-        nodeManager.getSelectedNode().addSample("A4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"A4");
     }
     else if (event.keyCode === 74) { // J
-        nodeManager.getSelectedNode().addSample("B4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"B4");
     }
     else if (event.keyCode === 75) { // K
-        nodeManager.getSelectedNode().addSample("C5");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C5");
     }
     else if (event.keyCode === 76) { // L
-        nodeManager.getSelectedNode().addSample("D5");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D5");
     }
     else if (event.keyCode === 186) { // ;
-        nodeManager.getSelectedNode().addSample("E5");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"E5");
     }
     else if (event.keyCode === 87) { // W
-        nodeManager.getSelectedNode().addSample("C#4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C#4");
     }
     else if (event.keyCode === 69) { // E
-        nodeManager.getSelectedNode().addSample("D#4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D#4");
     }
     else if (event.keyCode === 84) { // T
-        nodeManager.getSelectedNode().addSample("F#4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"F#4");
     }
     else if (event.keyCode === 89) { // Y
-        nodeManager.getSelectedNode().addSample("G#4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"G#4");
     }
     else if (event.keyCode === 85) { // U
-        nodeManager.getSelectedNode().addSample("A#4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"A#4");
     }
     else if (event.keyCode === 79) { // O
-        nodeManager.getSelectedNode().addSample("C#5");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C#5");
     }
     else if (event.keyCode === 80) { // P
-        nodeManager.getSelectedNode().addSample("D#5");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D#5");
     }
     else if (event.keyCode === 32) { // SPACE
-        nodeManager.getSelectedNode().addSample(null); // Rest
+
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),null); // Rest
     }
 
-    if (!isPlaying) { // Not playing
+    if (!isPlaying) { // Not playing //TODO: This functionality is not necessary
         if (event.keyCode === 188) {     // ,
-            nodeManager.getSelectedNode().stepBackward();
+            nodeManager.getNode(nodeManager.getSelectedNodeId()).stepBackward();
         }
         if (event.keyCode === 190) {     // . STEP
-            nodeManager.getSelectedNode().stepForward();
+            nodeManager.getNode(nodeManager.getSelectedNodeId()).stepForward();
         }
     }
 });
