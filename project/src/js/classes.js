@@ -65,14 +65,24 @@ class NodeManager {
             console.log('ERROR: Node with id: ' + nodeId + ' does not exists.')
     }
 
-    addSampleToSelectedNode(sample) {
-        if (this.selectedNodeId in this.userNodeIds)
-            this.nodes[this.selectedNodeId].addSample(sample)
+    addSampleToUserNode(nodeId, sample) {
+        if (nodeId in this.userNodeIds)
+            this.nodes[nodeId].addSample(sample)
     }
 
-    clearSelectedNode() {
-        if (this.selectedNodeId in this.userNodeIds)
-            this.nodes[this.selectedNodeId].clearSamples()
+    addSampleToRemoteNode(nodeId, sample) {
+        if (nodeId in this.remoteNodeIds)
+            this.nodes[nodeId].addSample(sample)
+    }
+
+    clearUserNode(nodeId) {
+        if (nodeId in this.userNodeIds)
+            this.nodes[nodeId].clearSamples();
+    }
+
+    clearRemoteNode(nodeId) {
+        if (nodeId in this.remoteNodeIds)
+            this.nodes[nodeId].clearSamples();
     }
 
     drawNodes() {
@@ -95,8 +105,8 @@ class NodeManager {
         this.nodes[this.selectedNodeId].setSelected(true);
     }
 
-    getSelectedNode() {
-        return this.nodes[this.selectedNodeId];
+    getSelectedNodeId() {
+        return this.selectedNodeId;
     }
 
     connectNode(nodeId, where) {

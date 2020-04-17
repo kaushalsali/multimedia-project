@@ -223,7 +223,7 @@ function setupUI() {
 }
 
 function clearNode() {
-    nodeManager.getSelectedNode().clearSamples();
+    nodeManager.clearUserNode(nodeManager.getSelectedNodeId());
 }
 
 function togglePlay() {
@@ -249,66 +249,67 @@ document.addEventListener('keydown', function(event) {
 
 
     if (event.keyCode === 65) { // A
-        nodeManager.addSampleToSelectedNode("C4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C4");
     }
     else if (event.keyCode === 83) { // S
-        nodeManager.addSampleToSelectedNode("D4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D4");
     }
     else if (event.keyCode === 68) { // D
-        nodeManager.addSampleToSelectedNode("E4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"E4");
     }
     else if (event.keyCode === 70) { // F
-        nodeManager.addSampleToSelectedNode("F4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"F4");
     }
     else if (event.keyCode === 71) { // G
-        nodeManager.addSampleToSelectedNode("G4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"G4");
     }
     else if (event.keyCode === 72) { // H
-        nodeManager.addSampleToSelectedNode("A4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"A4");
     }
     else if (event.keyCode === 74) { // J
-        nodeManager.addSampleToSelectedNode("B4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"B4");
     }
     else if (event.keyCode === 75) { // K
-        nodeManager.addSampleToSelectedNode("C5");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C5");
     }
     else if (event.keyCode === 76) { // L
-        nodeManager.addSampleToSelectedNode("D5");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D5");
     }
     else if (event.keyCode === 186) { // ;
-        nodeManager.addSampleToSelectedNode("E5");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"E5");
     }
     else if (event.keyCode === 87) { // W
-        nodeManager.addSampleToSelectedNode("C#4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C#4");
     }
     else if (event.keyCode === 69) { // E
-        nodeManager.addSampleToSelectedNode("D#4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D#4");
     }
     else if (event.keyCode === 84) { // T
-        nodeManager.addSampleToSelectedNode("F#4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"F#4");
     }
     else if (event.keyCode === 89) { // Y
-        nodeManager.addSampleToSelectedNode("G#4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"G#4");
     }
     else if (event.keyCode === 85) { // U
-        nodeManager.addSampleToSelectedNode("A#4");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"A#4");
     }
     else if (event.keyCode === 79) { // O
-        nodeManager.addSampleToSelectedNode("C#5");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C#5");
     }
     else if (event.keyCode === 80) { // P
-        nodeManager.addSampleToSelectedNode("D#5");
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D#5");
     }
     else if (event.keyCode === 32) { // SPACE
-        nodeManager.addSampleToSelectedNode(null); // Rest
+
+        nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),null); // Rest
     }
 
-    if (!isPlaying) { // Not playing
+    if (!isPlaying) { // Not playing //TODO: This functionality is not necessary
         if (event.keyCode === 188) {     // ,
-            nodeManager.getSelectedNode().stepBackward();
+            nodeManager.getNode(nodeManager.getSelectedNodeId()).stepBackward();
         }
         if (event.keyCode === 190) {     // . STEP
-            nodeManager.getSelectedNode().stepForward();
+            nodeManager.getNode(nodeManager.getSelectedNodeId()).stepForward();
         }
     }
 });
