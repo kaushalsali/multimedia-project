@@ -25,10 +25,20 @@ const TEMP_NUM_NODES = 2;
 // Colors
 const COLOR_BACKGROUND = [30, 30, 30];
 
-const COLOR_NODE_FACE = [17, 17, 17];
-const COLOR_DEFAULT_SAMPLE = [255, 165, 69];
-const COLOR_CURRENT_SAMPLE = [255, 85, 0];
-const COLOR_NO_SAMPLE = [51, 37, 0];
+const COLOR_NODE = {
+    'user': {
+        FACE: [17, 17, 17],
+        DEFAULT_SAMPLE: [255, 165, 69],
+        CURRENT_SAMPLE: [255, 85, 0],
+        NO_SAMPLE: [51, 37, 0]
+    },
+    'remote': {
+        FACE: [17, 17, 17],
+        DEFAULT_SAMPLE: [247, 29, 7],
+        CURRENT_SAMPLE: [255, 85, 0],
+        NO_SAMPLE: [50, 8, 0]
+    }
+};
 
 const COLOR_ANIM_BACKGROUND = [];
 const COLOR_ANIM_LIGHTNING = 'rgba(255,255,255,5)';

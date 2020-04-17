@@ -217,15 +217,15 @@ class Node {
 
         // Node sample tray
         if (this.numSamples === 0) {
-            fill(COLOR_NO_SAMPLE);
+            fill(COLOR_NODE[this.type].NO_SAMPLE);
             ellipse(0, 0, this.size);
         }
         else {
             for (let i = 0; i < this.numSamples; i++) {
                 if (this.currentSample === i)
-                    fill(COLOR_CURRENT_SAMPLE);
+                    fill(COLOR_NODE[this.type].CURRENT_SAMPLE);
                 else
-                    fill(COLOR_DEFAULT_SAMPLE);
+                    fill(COLOR_NODE[this.type].DEFAULT_SAMPLE);
                 arc(0, 0, this.size, this.size, this.sectorAngle * i, this.sectorAngle * (i + 1), PIE);
             }
         }
@@ -233,7 +233,7 @@ class Node {
         // Node face
         strokeWeight(2);
         stroke(0);
-        fill(COLOR_NODE_FACE);
+        fill(COLOR_NODE[this.type].FACE);
         ellipse(0, 0,  this.size * 0.85);
 
         // Inner gray circles
@@ -259,11 +259,11 @@ class Node {
     // Redraws only the current and previous sector. Less expensive function
     drawArc() {
         translate(this.x, this.y);
-        fill(COLOR_CURRENT_SAMPLE);
+        fill(COLOR_NODE[this.type].CURRENT_SAMPLE);
         arc(0, 0, this.size, this.size, this.sectorAngle * this.currentSample, this.sectorAngle * (this.currentSample + 1), PIE);
 
         let lastSample = ((this.currentSample - 1 + this.numSamples) % this.numSamples);
-        fill(COLOR_DEFAULT_SAMPLE);
+        fill(COLOR_NODE[this.type].DEFAULT_SAMPLE);
         arc(0, 0, this.size, this.size, this.sectorAngle * lastSample, this.sectorAngle * this.currentSample, PIE);
     }
 }
