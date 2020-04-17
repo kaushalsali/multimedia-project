@@ -1,7 +1,78 @@
 
+class NodeManager {
+
+    constructor() {
+        this.nodes = {};
+        this.selectedNodeId = 0;
+    }
+
+    getNumNodes() {
+        return Object.keys(this.nodes).length;
+    }
+
+    getNode(nodeId) {
+        return this.nodes[nodeId];
+    }
+
+    getAllNodes() {
+        return Object.values(this.nodes);
+    }
+
+    getAllNodeIds(){
+        return Object.keys(this.nodes);
+    }
+
+    createNode(nodeId, x, y, size, synth_config) {
+        if (!(nodeId in Object.keys(this.nodes)))
+            this.nodes[nodeId] = new Node(nodeId, x, y, size, synth_config);
+        else
+            console.log('ERROR: Node with id: ' + nodeId + ' already exists.')
+    }
+
+    deleteNode(nodeId) {
+        if (nodeId in Object.keys(this.nodes))
+            delete this.nodes[nodeId];
+        else
+            console.log('ERROR: Node with id: ' + nodeId + ' does not exists.')
+    }
+
+    drawNodes() {
+        for (let nodeId in this.nodes) {
+            if (this.nodes.hasOwnProperty(nodeId))
+                this.nodes[nodeId].draw();
+        }
+    }
+
+    stepAllNodes() {
+        for (let nodeId in this.nodes) {
+            if (this.nodes.hasOwnProperty(nodeId))
+                this.nodes[nodeId].step();
+        }
+    }
+
+    setSelectedNode(nodeId) {
+        this.nodes[this.selectedNodeId].setSelected(false);
+        this.selectedNodeId = nodeId;
+        this.nodes[this.selectedNodeId].setSelected(true);
+    }
+
+    getSelectedNode() {
+        return this.nodes[this.selectedNodeId];
+    }
+
+    connectNode(nodeId, where) {
+        this.nodes[nodeId].connectSynth(where);
+    }
+
+}
+
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+
 class Node {
 
-    constructor(x, y, size){
+    constructor(id, x, y, size, synth_config) {
+        this.id = id;
         this.x = x;
         this.y = y;
         this.size = size;
@@ -10,13 +81,31 @@ class Node {
         this.currentSample = -1;
         this.sectorAngle = 2 * PI / this.numSamples;
         this.nodeFaceColor = COLOR_NODE_FACE;
+        this.selected = false;
+        this.direction = 1;
 
-        this.synth = new NodeSynth();
+        this.synth = new NodeSynth(synth_config);
         this.interval = 0.3;
+    }
+
+    getId() {
+        return this.id;
+    }
+
+    isSelected() {
+        return this.selected;
+    }
+
+    setSelected(bool) {
+        this.selected = bool;
     }
 
     setNodeFaceColor(colorValues) {
         this.nodeFaceColor = colorValues;
+    }
+
+    hasSample() {
+        return this.samples.length > 0;
     }
 
     getSamples() {
@@ -26,6 +115,7 @@ class Node {
     clearSamples() {
         this.samples = [];
         this.numSamples = 0;
+        this.currentSample = -1;
     }
 
     addSample(sample) {
@@ -58,28 +148,46 @@ class Node {
 
 
     playSample(sample, interval) {
-        this.synth.playNote(sample, interval);
+        if (sample)
+            this.synth.playNote(sample, interval);
     }
 
     step() {
-        if (this.numSamples === 0)
-            this.currentSample = -1;
-        else
+        if (this.hasSample()) {
+            this.currentSample = (this.currentSample + this.direction) % this.numSamples;
+            this.playSample(this.samples[this.currentSample], this.interval);
+        }
+    }
+
+    stepForward() {
+        if (this.hasSample()) {
             this.currentSample = (this.currentSample + 1) % this.numSamples;
+            this.playSample(this.samples[this.currentSample], this.interval);
+        }
+    }
 
-        // Play sample
-        this.playSample(this.samples[this.currentSample], this.interval);
+    stepBackward() {
+        if (this.hasSample()) {
+            this.currentSample = (this.currentSample + this.numSamples - 1) % this.numSamples;
+            this.playSample(this.samples[this.currentSample], this.interval);
+        }
+    }
 
+    changeDirection() {
+        this.direction = !this.direction;
     }
 
     draw() {
+        push();
         translate(this.x, this.y);
         strokeWeight(2);
         stroke(0);
+        ellipseMode(RADIUS);
 
+        // Node sample tray
         if (this.numSamples === 0) {
             fill(COLOR_NO_SAMPLE);
-            ellipse(0, 0,  this.size);
+            ellipse(0, 0, this.size);
         }
         else {
             for (let i = 0; i < this.numSamples; i++) {
@@ -91,29 +199,30 @@ class Node {
             }
         }
 
-        ellipseMode(RADIUS);
+        // Node face
         strokeWeight(2);
         stroke(0);
         fill(COLOR_NODE_FACE);
-        ellipse(0, 0,  this.size - 20);
+        ellipse(0, 0,  this.size * 0.85);
         fill(this.nodeFaceColor);
-        ellipse(0, 0,  this.size - 20);
+        ellipse(0, 0,  this.size * 0.85);
 
-        fill([0,0,0,0]);
-        strokeWeight(0.3);
-
-        let gray = 0.2125 * this.nodeFaceColor[0] + 0.7154 * this.nodeFaceColor[1] + 0.0721* this.nodeFaceColor[2]; //0.0721
-
-        if (gray > 100)
-            stroke(0);
+        // Inner gray circles
+        strokeWeight(1);
+        if (this.isSelected())
+            stroke(70);
         else
-            stroke(100);
+            stroke(10);
         let numCircles = 10;
-        let size = this.size - 20;
+        let size = this.size  * 0.85;
         for (let i=1; i<numCircles; i++)
             ellipse(0, 0,  size - (size/numCircles)*i);
 
+        // TODO: Integrate animations
+        // animationDraw(this.samples[this.currentSample]);
+        // test((this.size - 25), 1);
 
+        pop();
     }
 
 
@@ -130,10 +239,13 @@ class Node {
     }
 }
 
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
 
 class NodeSynth {
-    constructor() {
-        this.synth = new Tone.Synth(SYNTH_CONFIG);
+
+    constructor(synth_config) {
+        this.synth = new Tone.Synth(synth_config);
     }
 
     connect(where) {
