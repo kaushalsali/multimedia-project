@@ -10,10 +10,16 @@ const VIEW_SCALE_MIN = 0.2;
 const NODE_SIZE = 120;
 const MAX_SAMPLES = 64;
 const MIN_INTER_NODE_DIST = 100;
+const NODE_TYPES = {
+    USER: 'user',
+    REMOTE: 'remote'
+};
+
 
 //---------------------------------------------------------------------------------
 //Temp variables //TODO: Delete later
-const TEMP_NUM_NODES = 4;
+const TEMP_NUM_NODES = 2;
+
 
 //---------------------------------------------------------------------------------
 // Colors

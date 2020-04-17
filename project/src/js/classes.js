@@ -3,6 +3,8 @@ class NodeManager {
 
     constructor() {
         this.nodes = {};
+        this.userNodesIds = [];
+        this.remoteNodesIds = [];
         this.selectedNodeId = 0;
     }
 
@@ -22,18 +24,47 @@ class NodeManager {
         return Object.keys(this.nodes);
     }
 
-    createNode(nodeId, x, y, size, synth_config) {
-        if (!(nodeId in Object.keys(this.nodes)))
-            this.nodes[nodeId] = new Node(nodeId, x, y, size, synth_config);
+    getUserNodes() {
+        return this.userNodesIds.map( (id) => {return this.nodes[id];})
+    }
+
+    getRemoteNodes() {
+        return this.remoteNodesIds.map( (id) => {return this.nodes[id];})
+    }
+
+    createNode(nodeId, nodeType, x, y, size, synth_config) {
+        if (!(nodeId in Object.keys(this.nodes))) {
+            this.nodes[nodeId] = new Node(nodeId, nodeType, x, y, size, synth_config);
+            if (nodeType === NODE_TYPES.REMOTE)
+                this.remoteNodesIds.push(nodeId);
+            else if (nodeType === NODE_TYPES.USER)
+                this.userNodesIds.push(nodeId);
+        }
         else
             console.log('ERROR: Node with id: ' + nodeId + ' already exists.')
     }
 
     deleteNode(nodeId) {
-        if (nodeId in Object.keys(this.nodes))
+        if (nodeId in Object.keys(this.nodes)) {
+            let type = this.nodes[nodeId].getType();
+            if (type === NODE_TYPES.USER)
+                this.userNodesIds.splice(this.userNodesIds.indexOf(nodeId), 1);
+            else if (type === NODE_TYPES.REMOTE)
+                this.remoteNodesIds.splice(this.remoteNodesIds.indexOf(nodeId), 1);
             delete this.nodes[nodeId];
+        }
         else
             console.log('ERROR: Node with id: ' + nodeId + ' does not exists.')
+    }
+
+    addSampleToSelectedNode(sample) {
+        if (this.selectedNodeId in this.userNodesIds)
+            this.nodes[this.selectedNodeId].addSample(sample)
+    }
+
+    clearSelectedNode() {
+        if (this.selectedNodeId in this.userNodesIds)
+            this.nodes[this.selectedNodeId].clearSamples()
     }
 
     drawNodes() {
@@ -71,8 +102,9 @@ class NodeManager {
 
 class Node {
 
-    constructor(id, x, y, size, synth_config) {
+    constructor(id, type, x, y, size, synth_config) {
         this.id = id;
+        this.type = type;
         this.x = x;
         this.y = y;
         this.size = size;
@@ -80,7 +112,6 @@ class Node {
         this.samples = [];
         this.currentSample = -1;
         this.sectorAngle = 2 * PI / this.numSamples;
-        this.nodeFaceColor = COLOR_NODE_FACE;
         this.selected = false;
         this.direction = 1;
 
@@ -92,16 +123,16 @@ class Node {
         return this.id;
     }
 
+    getType() {
+        return this.type;
+    }
+
     isSelected() {
         return this.selected;
     }
 
     setSelected(bool) {
         this.selected = bool;
-    }
-
-    setNodeFaceColor(colorValues) {
-        this.nodeFaceColor = colorValues;
     }
 
     hasSample() {
@@ -203,8 +234,6 @@ class Node {
         strokeWeight(2);
         stroke(0);
         fill(COLOR_NODE_FACE);
-        ellipse(0, 0,  this.size * 0.85);
-        fill(this.nodeFaceColor);
         ellipse(0, 0,  this.size * 0.85);
 
         // Inner gray circles
