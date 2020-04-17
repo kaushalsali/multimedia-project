@@ -3,8 +3,8 @@ class NodeManager {
 
     constructor() {
         this.nodes = {};
-        this.userNodesIds = [];
-        this.remoteNodesIds = [];
+        this.userNodeIds = [];
+        this.remoteNodeIds = [];
         this.selectedNodeId = 0;
     }
 
@@ -25,20 +25,28 @@ class NodeManager {
     }
 
     getUserNodes() {
-        return this.userNodesIds.map( (id) => {return this.nodes[id];})
+        return this.userNodeIds.map( (id) => {return this.nodes[id];})
+    }
+
+    getUserNodeIds() {
+        return this.userNodeIds;
     }
 
     getRemoteNodes() {
-        return this.remoteNodesIds.map( (id) => {return this.nodes[id];})
+        return this.remoteNodeIds.map( (id) => {return this.nodes[id];})
+    }
+
+    getRemoteNodeIds() {
+        return this.remoteNodeIds;
     }
 
     createNode(nodeId, nodeType, x, y, size, synth_config) {
         if (!(nodeId in Object.keys(this.nodes))) {
             this.nodes[nodeId] = new Node(nodeId, nodeType, x, y, size, synth_config);
             if (nodeType === NODE_TYPES.REMOTE)
-                this.remoteNodesIds.push(nodeId);
+                this.remoteNodeIds.push(nodeId);
             else if (nodeType === NODE_TYPES.USER)
-                this.userNodesIds.push(nodeId);
+                this.userNodeIds.push(nodeId);
         }
         else
             console.log('ERROR: Node with id: ' + nodeId + ' already exists.')
@@ -48,9 +56,9 @@ class NodeManager {
         if (nodeId in Object.keys(this.nodes)) {
             let type = this.nodes[nodeId].getType();
             if (type === NODE_TYPES.USER)
-                this.userNodesIds.splice(this.userNodesIds.indexOf(nodeId), 1);
+                this.userNodeIds.splice(this.userNodeIds.indexOf(nodeId), 1);
             else if (type === NODE_TYPES.REMOTE)
-                this.remoteNodesIds.splice(this.remoteNodesIds.indexOf(nodeId), 1);
+                this.remoteNodeIds.splice(this.remoteNodeIds.indexOf(nodeId), 1);
             delete this.nodes[nodeId];
         }
         else
@@ -58,12 +66,12 @@ class NodeManager {
     }
 
     addSampleToSelectedNode(sample) {
-        if (this.selectedNodeId in this.userNodesIds)
+        if (this.selectedNodeId in this.userNodeIds)
             this.nodes[this.selectedNodeId].addSample(sample)
     }
 
     clearSelectedNode() {
-        if (this.selectedNodeId in this.userNodesIds)
+        if (this.selectedNodeId in this.userNodeIds)
             this.nodes[this.selectedNodeId].clearSamples()
     }
 
