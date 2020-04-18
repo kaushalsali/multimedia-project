@@ -48,8 +48,8 @@ function setup() {
 
     // Create Nodes
     nodeManager = new NodeManager();
-    addMultipleNodes(TEMP_NUM_NODES, NODE_TYPES.USER);
-    addMultipleNodes(TEMP_NUM_NODES, NODE_TYPES.REMOTE);
+    addMultipleNodes(4, NODE_TYPES.USER);
+    //addMultipleNodes(TEMP_NUM_NODES, NODE_TYPES.REMOTE);
 
 
     // Setup UI
@@ -153,7 +153,7 @@ function addNode(id, type) {
         }
         if (!overlap) {
             //let synths = Object.keys(SYNTH_CONFIGS);
-            nodeManager.createNode(id, type, newX, newY, NODE_SIZE, SYNTH_CONFIGS['square']); //TODO: Replace Temp Synth initialization with player.
+            nodeManager.createNode(id, type, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']); //TODO: Replace Temp Synth initialization with player.
             nodeManager.connectNode(id, nodeConnectionPoint);
             added = true;
         }
@@ -174,29 +174,29 @@ function setupTone() {
     comp = new Tone.Compressor();
     comp.connect(masterEnv);
 
-    reverb = new Tone.Freeverb();
-    reverb.connect(comp);
+    // reverb = new Tone.Freeverb();
+    // reverb.connect(comp);
+    //
+    // vibrato = new Tone.Vibrato(5.0, 0.1);
+    // vibrato.connect(reverb);
 
-    vibrato = new Tone.Vibrato(5.0, 0.1);
-    vibrato.connect(reverb);
+    // filter = new Tone.Filter({
+    //     type: "lowpass",
+    //     frequency: 22050,
+    //     rolloff: -12,
+    //     Q: 1,
+    //     gain: 0
+    // });
+    // filter.connect(vibrato);
 
-    filter = new Tone.Filter({
-        type  : "lowpass",
-        frequency  : 1700 ,
-        rolloff  : -12 ,
-        Q  : 1 ,
-        gain  : 0
-    });
+    // Set global node connection point
+    nodeConnectionPoint = comp;
 
-    filter.connect(vibrato);
 
     Tone.Transport.scheduleRepeat((time)=>{
         nodeManager.stepAllNodes();
     }, "8n");
     Tone.Transport.bpm.value = 60;
-
-    // Set global node connection point
-    nodeConnectionPoint = filter;
 
 }
 

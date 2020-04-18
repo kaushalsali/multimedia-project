@@ -134,7 +134,6 @@ class Node {
         this.direction = 1;
 
         this.synth = new NodeSynth(synth_config);
-        this.interval = 0.3;
     }
 
     getId() {
@@ -183,42 +182,37 @@ class Node {
         this.synth.connect(where);
     }
 
-    setInterval(interval) {
-        this.interval = interval;
-    }
+    // setReleaseTime(releaseTime) {
+    //     this.synth.setReleaseTime(releaseTime);
+    // }
+    //
+    // setAttackTime(attackTime) {
+    //     this.synth.setAttackTime(attackTime);
+    // }
 
-    setReleaseTime(releaseTime) {
-        this.synth.setReleaseTime(releaseTime);
-    }
-
-    setAttackTime(attackTime) {
-        this.synth.setAttackTime(attackTime);
-    }
-
-
-    playSample(sample, interval) {
+    playSample(sample) {
         if (sample)
-            this.synth.playNote(sample, interval);
+            this.synth.playNote(sample);
     }
 
     step() {
         if (this.hasSample()) {
             this.currentSample = (this.currentSample + this.direction) % this.numSamples;
-            this.playSample(this.samples[this.currentSample], this.interval);
+            this.playSample(this.samples[this.currentSample]);
         }
     }
 
     stepForward() {
         if (this.hasSample()) {
             this.currentSample = (this.currentSample + 1) % this.numSamples;
-            this.playSample(this.samples[this.currentSample], this.interval);
+            this.playSample(this.samples[this.currentSample]);
         }
     }
 
     stepBackward() {
         if (this.hasSample()) {
             this.currentSample = (this.currentSample + this.numSamples - 1) % this.numSamples;
-            this.playSample(this.samples[this.currentSample], this.interval);
+            this.playSample(this.samples[this.currentSample]);
         }
     }
 
@@ -291,32 +285,52 @@ class Node {
 
 class NodeSynth {
 
-    constructor(synth_config) {
-        this.synth = new Tone.Synth(synth_config);
+    constructor(synthConfig) {
+        this.octaveShift = synthConfig.octaveShift * 12;
+        this.noteDuration = synthConfig.noteDuration;
+
+        this.filter = new Tone.Filter(synthConfig.filter);
+
+        this.ampEnv = new Tone.AmplitudeEnvelope(synthConfig.envelope);
+        this.ampEnv.connect(this.filter);
+
+        this.osc1 = new Tone.OmniOscillator(synthConfig.oscillator1);
+        this.osc1.connect(this.ampEnv);
+        this.osc1.start();
+
+        this.osc2 = new Tone.OmniOscillator(synthConfig.oscillator2);
+        this.osc2.connect(this.ampEnv);
+        this.osc2.start();
+
+        this.lfo = new Tone.LFO(synthConfig.lfo.config);
+        this.lfo.connect(this.osc1.frequency);
+        this.lfo.start();
     }
 
     connect(where) {
-        this.synth.connect(where);
+        this.filter.connect(where);
     }
 
-    getEnvelope() {
-        return this.envelope;
-    }
+    // getEnvelope() {
+    //     return this.synth.envelope;
+    // }
+    //
+    // setEnvelope(envelope) {
+    //     this.synth.set({"envelope": this.envelope});
+    // }
+    //
+    // setReleaseTime(releaseTime) {
+    //     this.synth.set({"envelope": {"release": releaseTime}});
+    // }
+    //
+    // setAttackTime(attackTime) {
+    //     this.synth.set({"envelope": {"attack": attackTime}});
+    // }
 
-    setEnvelope(envelope) {
-        this.synth.set({"envelope": this.envelope});
-    }
-
-    setReleaseTime(releaseTime) {
-        this.synth.set({"envelope": {"release": releaseTime}});
-    }
-
-    setAttackTime(attackTime) {
-        this.synth.set({"envelope": {"attack": attackTime}});
-    }
-
-
-    playNote(note, interval) {
-        this.synth.triggerAttackRelease(note, interval);
+    playNote(note) {
+        let freq = Tone.Frequency(note).transpose(this.octaveShift).toFrequency();
+        this.osc1.frequency.value = freq;
+        this.osc2.frequency.value = freq;
+        this.ampEnv.triggerAttackRelease(this.noteDuration);
     }
 }
