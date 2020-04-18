@@ -5,7 +5,7 @@ class NodeManager {
         this.nodes = {};
         this.userNodeIds = [];
         this.remoteNodeIds = [];
-        this.selectedNodeId = 0;
+        this.selectedNodeId = "";
     }
 
     getNumNodes() {
@@ -41,7 +41,7 @@ class NodeManager {
     }
 
     createNode(nodeId, nodeType, x, y, size, synth_config) {
-        if (!(nodeId in Object.keys(this.nodes))) {
+        if (Object.keys(this.nodes).indexOf(nodeId) === -1) {
             this.nodes[nodeId] = new Node(nodeId, nodeType, x, y, size, synth_config);
             if (nodeType === NODE_TYPES.REMOTE)
                 this.remoteNodeIds.push(nodeId);
@@ -53,7 +53,7 @@ class NodeManager {
     }
 
     deleteNode(nodeId) {
-        if (nodeId in Object.keys(this.nodes)) {
+        if (Object.keys(this.nodes).indexOf(nodeId) !== -1) {
             let type = this.nodes[nodeId].getType();
             if (type === NODE_TYPES.USER)
                 this.userNodeIds.splice(this.userNodeIds.indexOf(nodeId), 1);
@@ -62,26 +62,26 @@ class NodeManager {
             delete this.nodes[nodeId];
         }
         else
-            console.log('ERROR: Node with id: ' + nodeId + ' does not exists.')
+            console.log('ERROR: Node with id: ' + nodeId + ' does not exist.')
     }
 
     addSampleToUserNode(nodeId, sample) {
-        if (nodeId in this.userNodeIds)
+        if (this.userNodeIds.indexOf(nodeId) !== -1) 
             this.nodes[nodeId].addSample(sample)
     }
 
     addSampleToRemoteNode(nodeId, sample) {
-        if (nodeId in this.remoteNodeIds)
+        if (this.remoteNodeIds.indexOf(nodeId) !== -1)
             this.nodes[nodeId].addSample(sample)
     }
 
     clearUserNode(nodeId) {
-        if (nodeId in this.userNodeIds)
+        if (this.userNodeIds.indexOf(nodeId) !== -1)
             this.nodes[nodeId].clearSamples();
     }
 
     clearRemoteNode(nodeId) {
-        if (nodeId in this.remoteNodeIds)
+        if (this.remoteNodeIds.indexOf(nodeId) !== -1) 
             this.nodes[nodeId].clearSamples();
     }
 
@@ -100,7 +100,8 @@ class NodeManager {
     }
 
     setSelectedNode(nodeId) {
-        this.nodes[this.selectedNodeId].setSelected(false);
+        if (this.selectedNodeId)
+            this.nodes[this.selectedNodeId].setSelected(false);
         this.selectedNodeId = nodeId;
         this.nodes[this.selectedNodeId].setSelected(true);
     }

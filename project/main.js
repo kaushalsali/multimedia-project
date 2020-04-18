@@ -47,9 +47,22 @@ var io = require('socket.io').listen(server);
 
 io.sockets.on('connection', function (socket) {
   console.log("Client connected: " + socket.id + " " + Timecode(new Date()).subtract(serverStartTime).toString());
+
+  socket.on('add-user-node', (data) => {
+    socket.broadcast.emit('add-remote-node', data);
+  });
+
+  socket.on('add-sample-to-user-node', (data) => {
+    socket.broadcast.emit('add-sample-to-remote-node', data);
+  });
    
+  socket.on('clear-user-node', (data) => {
+    socket.broadcast.emit('clear-remote-node', data);
+  });
+
   socket.on('disconnect', function() {
      console.log("Client " + socket.id + " has disconnected");
+     socket.broadcast.emit('delete-remote-node', {user: socket.id});
   });
   }
 );
