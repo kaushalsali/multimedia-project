@@ -1,98 +1,125 @@
-function animationDraw(currentPlaying) {
-  console.log(currentPlaying);
-  if (currentPlaying === 'C4'){
-    push();
-    lightning();
-    pop();
-  }
 
-  //function calls for animations with different parameters
-  //uncomment once we can test with different sounds to trigger each one
-  //circleStrobe(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,colorStrobe=COLOR_BLUES[1]);
-//circleStrobe(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=10,colorStrobe=COLOR_GREENS[2]);
-//circleStrobe(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=5,colorStrobe=COLOR_PURPLES[0]);
-//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="light",eraseCircles=true,colorRange=COLOR_BLUES);
-//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="light",eraseCircles=false,colorRange=COLOR_GREENS);
-//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="dark",eraseCircles=true,colorRange=COLOR_BLUES);
-//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="dark",eraseCircles=false,colorRange=COLOR_BLUES);
-//starRotate(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nPoints=5, rotation=-20,colorRange=COLOR_GREENS)
-//starRotate(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nPoints=6, rotation=50,colorRange=COLOR_PURPLES);
-//spiral(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,spread=1.5,colorSpiral=COLOR_BLUES[1]);
-//spiral(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,spread=3,colorSpiral=COLOR_GREENS[1]);
-//spiral(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,spread=7,colorSpiral=COLOR_PURPLES[1]);
-//vertLines(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nLines=15,colorRange=COLOR_PURPLES,direction="RL");
-//vertLines(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nLines=25,colorRange=COLOR_GREENS,direction="LR");
-//vertLines(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nLines=7,colorRange=COLOR_BLUES,direction="LR");
-}
+class AnimationManager {
+    constructor(id, x, y, size){
+      this.id = id;
+      this.x = x;
+      this.y = y;
+      this.size = size;
 
-function lightning() {
-  let maxVal = 15;
-  let count = 0;
-  let len = 10;
-  let numStrikes = 5;  // Max of 5, bounded by initLine
-  let strike = 0;
-  let initLine = [0, 255, PI, -PI/2, -PI/5];
-  let randomRotate = PI/2;
-  for (strike = 0; strike < numStrikes; strike++) {
-    // For each strike, return to the center
-    pop();
-    push();
-    // Draw maxVal lines as part of a strike.
-    while (count < maxVal) {
-      if (count === 0){
-        rotate(initLine[strike]);
-        len = random(3, 15);
-        line(0, 0, 0, -len);
-        stroke([255, 255, 255, 255]);
-        strokeWeight(2);
-        translate(0, -len);
-        count = count + 1;
+      // Create an instance of each object for each node
+      this.lightning = new Lightning();
+      this.expandingCircle = new ExpandingCircle(this.size - 20, 0.5);
+      this.circlestrobe = new circleStrobe(this.x,this.y,this.size - 20);
+    }
+
+    draw(currentPlaying) {
+      if (currentPlaying === 'C4'){
+        push();
+        this.lightning.draw();
+        pop();
       }
-      else{
-        randomRotate = PI/4;
-        count = count + 1;
-        len = random(3, 15);
-        rotate(random(-randomRotate, randomRotate));
-        line(0, 0, 0, -len);
-        stroke([255, 255, 255, (255 * ((maxVal-count)/maxVal))]);
-        strokeWeight(4);
-        translate(0, -len);
+      else if (currentPlaying === 'D4'){
+        this.expandingCircle.draw();
+      }
+      else if (currentPlaying === 'D4'){
+        this.circlestrobe.draw(30,20,COLOR_BLUES[1]);
       }
     }
-    animCount = 0;
+}
+
+
+
+class Lightning {
+  constructor() {
+    this.trail = [];
+  }
+
+  draw(){
+    let maxVal = 15;
+    let count = 0;
+    let len = 10;
+    let numStrikes = 5;  // Max of 5, bounded by initLine
+    let strike = 0;
+    let initLine = [0, 255, PI, -PI/2, -PI/5];
+    let randomRotate = PI/2;
+    for (strike = 0; strike < numStrikes; strike++) {
+      // For each strike, return to the center
+      pop();
+      push();
+      // Draw maxVal lines as part of a strike.
+      while (count < maxVal) {
+        if (count === 0){
+          rotate(initLine[strike]);
+          len = random(3, 15);
+          line(0, 0, 0, -len);
+          stroke([255, 255, 255, 255]);
+          strokeWeight(2);
+          translate(0, -len);
+          count = count + 1;
+        }
+        else{
+          randomRotate = PI/4;
+          count = count + 1;
+          len = random(3, 15);
+          rotate(random(-randomRotate, randomRotate));
+          line(0, 0, 0, -len);
+          stroke([255, 255, 255, (255 * ((maxVal-count)/maxVal))]);
+          strokeWeight(4);
+          translate(0, -len);
+        }
+      }
+      //animCount = 0;
+    }
   }
 }
 
-let radiusGrowth = 1;
-function test(maxRadius, speed) {
-  stroke(COLOR_ANIM_LIGHTNING);
-  strokeWeight(2);
-  fill([0, 0, 0, 0]);
-  circle(0, 0, (5 + radiusGrowth));
-  radiusGrowth += speed;
-  if (radiusGrowth >= maxRadius) {
-    radiusGrowth = 1;
+
+class ExpandingCircle {
+  constructor(maxRadius, speed){
+    this.maxRadius = maxRadius;
+    this.speed = speed;
+
+    this.radiusGrowth = 1;
   }
-}
+
+  draw() {
+    stroke(COLOR_ANIM_LIGHTNING);
+    strokeWeight(2);
+    fill([0, 0, 0, 0]);
+    circle(0, 0, (5 + this.radiusGrowth));
+    this.radiusGrowth += this.speed;
+    if (this.radiusGrowth >= this.maxRadius)
+      this.radiusGrowth = 1;
+    }
+  }
 
 //expanding concentric circles, solid/black strobe
 //first 3 parameters control position and size
 //increase speed by increasing frame rate (fr) or decreasing nCircles
-function circleStrobe(xCenter,yCenter,maxD,fr,nCircles,colorRange){
-  noStroke();
-  frameRate(fr);
-  minD=10; //diameter of smallest circle;
-  blendMode(DIFFERENCE);
-  dIncr=ceil((maxD-minD)/nCircles); //num pixels to increment diameter
-  if (frameCount==1){
-    d=minD;
+class circleStrobe{
+  constructor(x, y, size){
+    this.x = x;
+    this.y = y;
+    this.size = size;
   }
-  else {
-    d+=dIncr;
-  }
-  if (d<=maxD) {
-      fill(colorStrobe);
-      circle(xCenter,yCenter,d);
+
+  draw(fr,nCircles,colorRange){
+    noStroke();
+    frameRate(fr);
+    var minD=2; //diameter of smallest circle;
+    var d;
+    blendMode(DIFFERENCE);
+    var dIncr=ceil((this.size-minD)/nCircles); //num pixels to increment diameter
+    if (frameCount==1){
+      d=minD;
+    }
+    else {
+      d+=dIncr;
+    }
+    if (d<=this.size) {
+        fill(colorStrobe);
+        circle(this.x,this.y,d);
+    }
   }
 }
 
@@ -240,3 +267,21 @@ function star(x, y, radius1, radius2, npoints) {
   }
   endShape(CLOSE);
 }
+
+//function calls for animations with different parameters
+//uncomment once we can test with different sounds to trigger each one
+//circleStrobe(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,colorStrobe=COLOR_BLUES[1]);
+//circleStrobe(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=10,colorStrobe=COLOR_GREENS[2]);
+//circleStrobe(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=5,colorStrobe=COLOR_PURPLES[0]);
+//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="light",eraseCircles=true,colorRange=COLOR_BLUES);
+//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="light",eraseCircles=false,colorRange=COLOR_GREENS);
+//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="dark",eraseCircles=true,colorRange=COLOR_BLUES);
+//circleFade(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nCircles=20,fadeTo="dark",eraseCircles=false,colorRange=COLOR_BLUES);
+//starRotate(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nPoints=5, rotation=-20,colorRange=COLOR_GREENS)
+//starRotate(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nPoints=6, rotation=50,colorRange=COLOR_PURPLES);
+//spiral(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,spread=1.5,colorSpiral=COLOR_BLUES[1]);
+//spiral(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,spread=3,colorSpiral=COLOR_GREENS[1]);
+//spiral(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,spread=7,colorSpiral=COLOR_PURPLES[1]);
+//vertLines(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nLines=15,colorRange=COLOR_PURPLES,direction="RL");
+//vertLines(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nLines=25,colorRange=COLOR_GREENS,direction="LR");
+//vertLines(xCenter=0,yCenter=0,maxD=2*this.size-50,fr=30,nLines=7,colorRange=COLOR_BLUES,direction="LR");

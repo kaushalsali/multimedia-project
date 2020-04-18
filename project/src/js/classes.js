@@ -86,6 +86,8 @@ class Node {
 
         this.synth = new NodeSynth(synth_config);
         this.interval = 0.3;
+
+        this.animation = new AnimationManager(id, x, y, size);
     }
 
     getId() {
@@ -218,10 +220,8 @@ class Node {
         for (let i=1; i<numCircles; i++)
             ellipse(0, 0,  size - (size/numCircles)*i);
 
-        // TODO: Integrate animations
-        // animationDraw(this.samples[this.currentSample]);
-        // test((this.size - 25), 0.25);
-
+        // Draw animations
+        this.animation.draw(this.samples[this.currentSample]);
         pop();
     }
 
