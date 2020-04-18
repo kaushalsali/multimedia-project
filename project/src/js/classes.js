@@ -182,14 +182,6 @@ class Node {
         this.synth.connect(where);
     }
 
-    // setReleaseTime(releaseTime) {
-    //     this.synth.setReleaseTime(releaseTime);
-    // }
-    //
-    // setAttackTime(attackTime) {
-    //     this.synth.setAttackTime(attackTime);
-    // }
-
     playSample(sample) {
         if (sample)
             this.synth.playNote(sample);
@@ -298,39 +290,31 @@ class NodeSynth {
         this.osc1.connect(this.ampEnv);
         this.osc1.start();
 
-        this.osc2 = new Tone.OmniOscillator(synthConfig.oscillator2);
-        this.osc2.connect(this.ampEnv);
-        this.osc2.start();
+        if (synthConfig.oscillator2) {
+            this.osc2 = new Tone.OmniOscillator(synthConfig.oscillator2);
+            this.osc2.connect(this.ampEnv);
+            this.osc2.start();
+        }
 
-        this.lfo = new Tone.LFO(synthConfig.lfo.config);
-        this.lfo.connect(this.osc1.frequency);
-        this.lfo.start();
+        if (synthConfig.oscillator3) {
+            this.osc3 = new Tone.OmniOscillator(synthConfig.oscillator3);
+            this.osc3.connect(this.ampEnv);
+            this.osc3.start();
+        }
     }
 
     connect(where) {
         this.filter.connect(where);
     }
 
-    // getEnvelope() {
-    //     return this.synth.envelope;
-    // }
-    //
-    // setEnvelope(envelope) {
-    //     this.synth.set({"envelope": this.envelope});
-    // }
-    //
-    // setReleaseTime(releaseTime) {
-    //     this.synth.set({"envelope": {"release": releaseTime}});
-    // }
-    //
-    // setAttackTime(attackTime) {
-    //     this.synth.set({"envelope": {"attack": attackTime}});
-    // }
-
     playNote(note) {
+        console.log(this);
         let freq = Tone.Frequency(note).transpose(this.octaveShift).toFrequency();
         this.osc1.frequency.value = freq;
-        this.osc2.frequency.value = freq;
+        if (this.osc2)
+            this.osc2.frequency.value = freq;
+        if (this.osc3)
+            this.osc3.frequency.value = freq;
         this.ampEnv.triggerAttackRelease(this.noteDuration);
     }
 }
