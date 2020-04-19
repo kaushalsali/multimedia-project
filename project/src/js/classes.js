@@ -301,6 +301,33 @@ class NodeSynth {
             this.osc3.connect(this.ampEnv);
             this.osc3.start();
         }
+
+        if (synthConfig.lfo) {
+            this.lfo = new Tone.LFO(synthConfig.lfo.config);
+            let connectPoint = synthConfig.lfo.connectTo;
+            for (let key of Object.keys(connectPoint)) {
+                switch (key) {
+                    case "filter":
+                        this.lfo.connect(this.filter[connectPoint[key]]);
+                        break;
+                    case "oscillator1":
+                        this.lfo.connect(this.osc1[connectPoint[key]]);
+                        break;
+                    case "oscillator2":
+                        this.lfo.connect(this.osc2[connectPoint[key]]);
+                        break;
+                    case "oscillator3":
+                        this.lfo.connect(this.osc3[connectPoint[key]]);
+                        break;
+                    case "envelope":
+                        this.lfo.connect(this.ampEnv[connectPoint[key]]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            this.lfo.start();
+        }
     }
 
     connect(where) {
