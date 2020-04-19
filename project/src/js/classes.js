@@ -16,6 +16,10 @@ class NodeManager {
         return this.nodes[nodeId];
     }
 
+    getNodeType(nodeId) {
+        return this.nodes[nodeId].getType();
+    }
+
     getAllNodes() {
         return Object.values(this.nodes);
     }
@@ -100,7 +104,8 @@ class NodeManager {
     }
 
     setSelectedNode(nodeId) {
-        this.nodes[this.selectedNodeId].setSelected(false);
+        if (this.selectedNodeId in Object.keys(this.nodes)) // checks if node has been deleted
+            this.nodes[this.selectedNodeId].setSelected(false);
         this.selectedNodeId = nodeId;
         this.nodes[this.selectedNodeId].setSelected(true);
     }

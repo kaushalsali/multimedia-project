@@ -48,7 +48,7 @@ function setup() {
 
     // Create Nodes
     nodeManager = new NodeManager();
-    addMultipleNodes(4, NODE_TYPES.USER);
+    addMultipleNodes(1, NODE_TYPES.USER);
     //addMultipleNodes(TEMP_NUM_NODES, NODE_TYPES.REMOTE);
 
 
@@ -85,7 +85,6 @@ function mousePressed() {
         let distance = dist(mouseX, mouseY, correctedNodeX, correctedNodeY);
         if (distance < NODE_SIZE * viewScale) {
             nodeManager.setSelectedNode(node.getId());
-            console.log('Selected Node:', node.getId());
         }
     }
 }
@@ -123,14 +122,14 @@ function updateViewTranslationParameters() {
 let __temp_id = 0; //TODO: Properly set id later.
 function addMultipleNodes(numNodes, type) {
     for (let i=0; i<numNodes; i++) {
-        addNode(__temp_id++, type);
+        addNodeToView(__temp_id++, type);
     }
 }
 
 /*
  * Creates and adds a node to the view such that it doesn't overlap with existing nodes.
  */
-function addNode(id, type) {
+function addNodeToView(id, type) {
     let viewWidth = view_max_x_offset - view_min_x_offset;
     let viewHeight = view_max_y_offset - view_min_y_offset;
     let totalInterNodeDistance = NODE_SIZE * 2 + MIN_INTER_NODE_DIST;
@@ -140,7 +139,7 @@ function addNode(id, type) {
     let added = false;
 
     while (!added) { // Possibility of infinite loop !!
-        console.log('in addNode()');
+        console.log('in addNodeToView()');
         newX = random(NODE_SIZE, viewWidth - NODE_SIZE);
         newY = random(NODE_SIZE, viewHeight - NODE_SIZE);
         // newX = width/2;
@@ -205,25 +204,50 @@ function setupUI() {
 
     let btnWidth = 180;
     let btnHeight = 35;
+    let btnSpacing = 100;
 
-    btnPlay = createButton("Play");
-    btnPlay.size(btnWidth, btnHeight);
-    btnPlay.position(width/2 + 20, height - 150);
-    btnPlay.addClass("myButton");
-    btnPlay.mousePressed(togglePlay);
-    btnPlay.html("Play");
+    btnAddNode = createButton("Add Node");
+    btnAddNode.size(btnWidth, btnHeight);
+    btnAddNode.position((width/2 - btnWidth/2) - btnSpacing * 3, height - 120);
+    btnAddNode.addClass("myButton");
+    btnAddNode.mousePressed(addNode);
+    btnAddNode.html("Add Node");
+
+    btnRemoveNode = createButton("Remove Node");
+    btnRemoveNode.size(btnWidth, btnHeight);
+    btnRemoveNode.position((width/2 - btnWidth/2) - btnSpacing, height - 120);
+    btnRemoveNode.addClass("myButton");
+    btnRemoveNode.mousePressed(removeNode);
+    btnRemoveNode.html("Remove Node");
 
     btnClear = createButton("Clear Node");
     btnClear.size(btnWidth, btnHeight);
-    btnClear.position(width/2 - btnWidth - 20, height - 150);
+    btnClear.position((width/2 - btnWidth/2) + btnSpacing, height - 120);
     btnClear.addClass("myButton");
     btnClear.mousePressed(clearNode);
     btnClear.html("Clear Node");
+
+    btnPlay = createButton("Play");
+    btnPlay.size(btnWidth, btnHeight);
+    btnPlay.position((width/2 - btnWidth/2) + btnSpacing * 3, height - 120);
+    btnPlay.addClass("myButton");
+    btnPlay.mousePressed(togglePlay);
+    btnPlay.html("Play");
 
 }
 
 function clearNode() {
     nodeManager.clearUserNode(nodeManager.getSelectedNodeId());
+}
+
+function addNode() {
+    addNodeToView(__temp_id++, NODE_TYPES.USER);
+}
+
+function removeNode() {
+    let selectedNodeId = nodeManager.getSelectedNodeId();
+    if (nodeManager.getNodeType(selectedNodeId) === NODE_TYPES.USER)
+        nodeManager.deleteNode(selectedNodeId);
 }
 
 function togglePlay() {
