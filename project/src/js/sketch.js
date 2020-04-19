@@ -13,17 +13,23 @@ let filter;
 let nodeConnectionPoint;
 
 // UI
+let btnAddNode;
+let btnRemoveNode;
+let btnClear;
+let selSynth;
 let btnPlay;
-let btnRecord;
 
 // Global view parameters
 let view_max_x_offset = 1000;
-let view_min_x_offset = 0;
+let view_min_x_offset = -1000;
 let view_max_y_offset = 1000;
-let view_min_y_offset = 0;
+let view_min_y_offset = -1000;
 let viewOffsetX = 0;
 let viewOffsetY = 0;
 let viewScale = 1;
+let viewWidth;
+let viewHeight;
+
 
 // Node parameters
 let nodeManager = null;
@@ -42,13 +48,18 @@ function setup() {
     view_min_x_offset = -width/2;
     view_max_y_offset = height/2;
     view_min_y_offset = -height/2;
+    viewWidth = view_max_x_offset - view_min_x_offset + width;
+    viewHeight = view_max_y_offset - view_min_y_offset + height;
+
 
     // Tone Setup
     setupTone();
 
     // Create Nodes
     nodeManager = new NodeManager();
-    addMultipleNodes(4, NODE_TYPES.USER);
+    let pos = addNewNodeToViewAtRandom(__temp_id++, NODE_TYPES.USER);
+
+    // addMultipleNodes(1, NODE_TYPES.USER);
     //addMultipleNodes(TEMP_NUM_NODES, NODE_TYPES.REMOTE);
 
 
@@ -69,8 +80,12 @@ function draw() {
 
     // Translate view
     updateViewTranslationParameters();
+
+    // Draw
     push();
     translate(viewOffsetX, viewOffsetY);
+    drawViewRect();
+    drawGrid();
     nodeManager.drawNodes();
     pop();
 
@@ -83,9 +98,10 @@ function mousePressed() {
         let correctedNodeX = ((node.x - width/2) * viewScale + width/2) + (viewOffsetX * viewScale) ;
         let correctedNodeY = ((node.y - height/2) * viewScale + height/2) + (viewOffsetY * viewScale);
         let distance = dist(mouseX, mouseY, correctedNodeX, correctedNodeY);
-        if (distance < NODE_SIZE * viewScale) {
+        if (distance < NODE_SIZE * viewScale) { // Node selected
             nodeManager.setSelectedNode(node.getId());
-            console.log('Selected Node:', node.getId());
+            selSynth.selected(node.getSynthName());
+
         }
     }
 }
@@ -121,30 +137,47 @@ function updateViewTranslationParameters() {
 
 
 let __temp_id = 0; //TODO: Properly set id later.
-function addMultipleNodes(numNodes, type) {
+
+function addMultipleNodes(numNodes, type) { //TODO: this is a temporary function
     for (let i=0; i<numNodes; i++) {
-        addNode(__temp_id++, type);
+        addNewNodeToViewAtRandom(__temp_id++, type);
     }
+}
+
+
+/*
+ * Creates and adds a node to the view such that it doesn't overlap with existing nodes.
+ */
+function addNewNodeToViewAt(id, type, x, y) {
+    let created = false;
+    if (type === NODE_TYPES.USER)
+        created = nodeManager.createUserNode(id, x, y, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+    else if (type === NODE_TYPES.REMOTE)
+        created = nodeManager.createRemoteNode(id, x, y, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+    if (created)
+        nodeManager.connectNode(id, nodeConnectionPoint);
 }
 
 /*
  * Creates and adds a node to the view such that it doesn't overlap with existing nodes.
  */
-function addNode(id, type) {
-    let viewWidth = view_max_x_offset - view_min_x_offset;
-    let viewHeight = view_max_y_offset - view_min_y_offset;
+function addNewNodeToViewAtRandom(id, type) {
     let totalInterNodeDistance = NODE_SIZE * 2 + MIN_INTER_NODE_DIST;
     let nodes = nodeManager.getAllNodes();
     let newX, newY;
     let overlap = false;
     let added = false;
 
+    let timeLimit = 500;
+    let timeStart = millis();
+
     while (!added) { // Possibility of infinite loop !!
-        console.log('in addNode()');
-        newX = random(NODE_SIZE, viewWidth - NODE_SIZE);
-        newY = random(NODE_SIZE, viewHeight - NODE_SIZE);
+
+        newX = random(NODE_SIZE, viewWidth - NODE_SIZE) - width/2;
+        newY = random(NODE_SIZE, viewHeight - NODE_SIZE) - height/2;
         // newX = width/2;
         // newY = height/2;
+
         // Check for overlap with all existing nodes
         for (let j=0; j<nodes.length; j++) {
             overlap = dist(newX, newY, nodes[j].x, nodes[j].y) < totalInterNodeDistance;
@@ -152,10 +185,22 @@ function addNode(id, type) {
                 break;
         }
         if (!overlap) {
-            //let synths = Object.keys(SYNTH_CONFIGS);
-            nodeManager.createNode(id, type, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']); //TODO: Replace Temp Synth initialization with player.
-            nodeManager.connectNode(id, nodeConnectionPoint);
             added = true;
+            let created = false;
+            if (type === NODE_TYPES.USER)
+                created = nodeManager.createUserNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+            else if (type === NODE_TYPES.REMOTE)
+                created = nodeManager.createRemoteNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+            if (created) {
+                nodeManager.connectNode(id, nodeConnectionPoint);
+                return {'x': newX, 'y': newY};
+            }
+            return null;
+        }
+
+        if (millis() - timeStart > timeLimit) {// If cant add within timelimit stop
+            console.log('View Full. No more space.');
+            return null;
         }
     }
 }
@@ -205,28 +250,68 @@ function setupUI() {
 
     let btnWidth = 180;
     let btnHeight = 35;
+    let btnSpacing = 100;
 
-    btnPlay = createButton("Play");
-    btnPlay.size(btnWidth, btnHeight);
-    btnPlay.position(width/2 + 20, height - 150);
-    btnPlay.addClass("myButton");
-    btnPlay.mousePressed(togglePlay);
-    btnPlay.html("Play");
+    btnAddNode = createButton("Add Node");
+    btnAddNode.size(btnWidth, btnHeight);
+    btnAddNode.position((width/2 - btnWidth/2) - btnSpacing * 3, height - 120);
+    btnAddNode.addClass("myButton");
+    btnAddNode.mousePressed(handleAddNode);
+    btnAddNode.html("Add Node");
+
+    btnRemoveNode = createButton("Remove Node");
+    btnRemoveNode.size(btnWidth, btnHeight);
+    btnRemoveNode.position((width/2 - btnWidth/2) - btnSpacing, height - 120);
+    btnRemoveNode.addClass("myButton");
+    btnRemoveNode.mousePressed(handleRemoveNode);
+    btnRemoveNode.html("Remove Node");
 
     btnClear = createButton("Clear Node");
     btnClear.size(btnWidth, btnHeight);
-    btnClear.position(width/2 - btnWidth - 20, height - 150);
+    btnClear.position((width/2 - btnWidth/2) + btnSpacing, height - 120);
     btnClear.addClass("myButton");
-    btnClear.mousePressed(clearNode);
+    btnClear.mousePressed(handleClearNode);
     btnClear.html("Clear Node");
+
+    selSynth = createSelect(false);
+    selSynth.size(btnWidth, btnHeight);
+    selSynth.position((width/2 - btnWidth/2) + btnSpacing * 3, height - 120);
+    selSynth.addClass("myButton");
+    selSynth.changed(handleChangeSynth);
+    for (let instrument in SYNTH_CONFIGS)
+        selSynth.option(instrument);
+    selSynth.selected(0);
+
+
+    btnPlay = createButton("Play");
+    btnPlay.size(btnWidth, btnHeight);
+    btnPlay.position((width/2 - btnWidth/2), height - 170);
+    btnPlay.addClass("myButton");
+    btnPlay.mousePressed(handleTogglePlay);
+    btnPlay.html("Play");
 
 }
 
-function clearNode() {
+function handleClearNode() {
     nodeManager.clearUserNode(nodeManager.getSelectedNodeId());
 }
 
-function togglePlay() {
+function handleAddNode() {
+    addNewNodeToViewAtRandom(__temp_id++, NODE_TYPES.USER);
+}
+
+function handleRemoveNode() {
+    nodeManager.deleteUserNode(nodeManager.getSelectedNodeId());
+}
+
+function handleChangeSynth() {
+    console.log(selSynth.value());
+    let id = nodeManager.getSelectedNodeId();
+    nodeManager.setUserNodeSynth(id, selSynth.value());
+    nodeManager.connectNode(id, nodeConnectionPoint);
+}
+
+function handleTogglePlay() {
     if (isPlaying) {
         Tone.Transport.pause();
         btnPlay.html("Play");
@@ -238,6 +323,32 @@ function togglePlay() {
     isPlaying = !isPlaying;
 }
 
+function drawGrid() {
+    let numHor = 100;
+    let numVer = 100;
+    translate(-(viewWidth - width)/2, -(viewHeight - height)/2);
+    let spacingHor = viewWidth / numHor;
+    for (let i=0; i<numHor; i++) {
+        stroke(0);
+        strokeWeight(1);
+        line(i*spacingHor, 0, i*spacingHor, viewHeight);
+    }
+    let spacingVer = viewHeight / numVer;
+    for (let i=0; i<numHor; i++) {
+        stroke(0);
+        strokeWeight(1);
+        line(0, i*spacingVer, viewWidth, i*spacingVer);
+    }
+    translate((viewWidth - width)/2, (viewHeight - height)/2);
+}
+
+function drawViewRect() {
+    translate(width/2, height/2);
+    fill(COLOR_BACKGROUND_VIEW);
+    rectMode(CENTER);
+    rect(0,0, viewWidth, viewHeight);
+    translate(-width/2, -height/2);
+}
 
 document.addEventListener('keydown', function(event) {
 

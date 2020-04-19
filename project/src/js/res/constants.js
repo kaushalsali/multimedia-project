@@ -1,15 +1,18 @@
 // View paramerters
-const VIEW_TRANSLATION_SPEED = 5;
+const VIEW_TRANSLATION_SPEED = 10;
 const VIEW_TRANSLATION_MARGIN = 50;
 const VIEW_SCALE_FACTOR = 0.001;
-const VIEW_SCALE_MAX = 3;
-const VIEW_SCALE_MIN = 0.2;
+const VIEW_SCALE_MAX = 2;
+const VIEW_SCALE_MIN = 0.4;
 
 //---------------------------------------------------------------------------------
 // Node
+const MAX_USER_NODES = 100;
+const MAX_TOTAL_NODES = 100;
 const NODE_SIZE = 120;
 const MAX_SAMPLES = 64;
-const MIN_INTER_NODE_DIST = 100;
+const MIN_INTER_NODE_DIST = 50;
+const DEFAULT_SYNTH = SYNTH.MID;
 const NODE_TYPES = {
     USER: 'user',
     REMOTE: 'remote'
@@ -24,6 +27,7 @@ const TEMP_NUM_NODES = 2;
 //---------------------------------------------------------------------------------
 // Colors
 const COLOR_BACKGROUND = [30, 30, 30];
+const COLOR_BACKGROUND_VIEW = [20, 20, 20];
 
 const COLOR_NODE = {
     'user': {

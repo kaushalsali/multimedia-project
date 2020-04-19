@@ -8,12 +8,23 @@ class NodeManager {
         this.selectedNodeId = 0;
     }
 
+    hasNode(nodeId) {
+        nodeId = nodeId.toString();
+        return Object.keys(this.nodes).includes(nodeId);
+    }
+
     getNumNodes() {
         return Object.keys(this.nodes).length;
     }
 
     getNode(nodeId) {
+        nodeId = nodeId.toString();
         return this.nodes[nodeId];
+    }
+
+    getNodeType(nodeId) {
+        nodeId = nodeId.toString();
+        return this.nodes[nodeId].getType();
     }
 
     getAllNodes() {
@@ -40,20 +51,53 @@ class NodeManager {
         return this.remoteNodeIds;
     }
 
-    createNode(nodeId, nodeType, x, y, size, synth_config) {
-        if (!(nodeId in Object.keys(this.nodes))) {
-            this.nodes[nodeId] = new Node(nodeId, nodeType, x, y, size, synth_config);
-            if (nodeType === NODE_TYPES.REMOTE)
-                this.remoteNodeIds.push(nodeId);
-            else if (nodeType === NODE_TYPES.USER)
-                this.userNodeIds.push(nodeId);
+    createUserNode(nodeId, x, y, size, synth_config) {
+        if (this.userNodeIds.length < MAX_USER_NODES) {
+            return this._createNode(nodeId, NODE_TYPES.USER, x, y, size, synth_config);
         }
-        else
-            console.log('ERROR: Node with id: ' + nodeId + ' already exists.')
+        return false;
     }
 
-    deleteNode(nodeId) {
-        if (nodeId in Object.keys(this.nodes)) {
+    createRemoteNode(nodeId, x, y, size, synth_config) {
+        return this._createNode(nodeId, NODE_TYPES.REMOTE, x, y, size, synth_config);
+    }
+
+    _createNode(nodeId, nodeType, x, y, size, synth_config) {
+        nodeId = nodeId.toString();
+        if (this.getNumNodes() < MAX_TOTAL_NODES) {
+            if (!(Object.keys(this.nodes).includes(nodeId))) {
+                this.nodes[nodeId] = new Node(nodeId, nodeType, x, y, size, synth_config);
+                if (nodeType === NODE_TYPES.REMOTE)
+                    this.remoteNodeIds.push(nodeId);
+                else if (nodeType === NODE_TYPES.USER)
+                    this.userNodeIds.push(nodeId);
+                return true;
+            } else {
+                console.log('ERROR: Node with id: ' + nodeId + ' already exists.');
+                return false;
+            }
+        }
+        else {
+            console.log('ERROR: Maximum number of total nodes reached.');
+            return false;
+        }
+    }
+
+    deleteUserNode(nodeId) {
+        nodeId = nodeId.toString();
+        if (nodeManager.getNodeType(nodeId) === NODE_TYPES.USER)
+            this._deleteNode(nodeId);
+    }
+
+    deleteRemoteNode(nodeId) {
+        nodeId = nodeId.toString();
+        if (nodeManager.getNodeType(nodeId) === NODE_TYPES.REMOTE)
+            this._deleteNode(nodeId);
+    }
+
+    _deleteNode(nodeId) {
+        nodeId = nodeId.toString();
+        if (Object.keys(this.nodes).includes(nodeId)) {
             let type = this.nodes[nodeId].getType();
             if (type === NODE_TYPES.USER)
                 this.userNodeIds.splice(this.userNodeIds.indexOf(nodeId), 1);
@@ -62,28 +106,39 @@ class NodeManager {
             delete this.nodes[nodeId];
         }
         else
-            console.log('ERROR: Node with id: ' + nodeId + ' does not exists.')
+            console.log('ERROR: Node with id: ' + nodeId + ' does not exists.');
     }
 
     addSampleToUserNode(nodeId, sample) {
-        if (nodeId in this.userNodeIds)
+        if (this.userNodeIds.includes(nodeId.toString()))
             this.nodes[nodeId].addSample(sample)
     }
 
     addSampleToRemoteNode(nodeId, sample) {
-        if (nodeId in this.remoteNodeIds)
+        if (this.remoteNodeIds.includes(nodeId.toString()))
             this.nodes[nodeId].addSample(sample)
     }
 
     clearUserNode(nodeId) {
-        if (nodeId in this.userNodeIds)
+        if (this.userNodeIds.includes(nodeId.toString()))
             this.nodes[nodeId].clearSamples();
     }
 
     clearRemoteNode(nodeId) {
-        if (nodeId in this.remoteNodeIds)
+        if (this.remoteNodeIds.includes(nodeId.toString()))
             this.nodes[nodeId].clearSamples();
     }
+
+    setUserNodeSynth(nodeId, synthName) {
+        if (this.userNodeIds.includes(nodeId.toString()))
+            this.nodes[nodeId].changeSynth(synthName);
+    }
+
+    setRemoteNodeSynth(nodeId, synthName) {
+        if (this.userNodeIds.includes(nodeId.toString()))
+            this.nodes[nodeId].changeSynth(synthName);
+    }
+
 
     drawNodes() {
         for (let nodeId in this.nodes) {
@@ -100,8 +155,9 @@ class NodeManager {
     }
 
     setSelectedNode(nodeId) {
-        this.nodes[this.selectedNodeId].setSelected(false);
-        this.selectedNodeId = nodeId;
+        if (Object.keys(this.nodes).includes(this.selectedNodeId)) // checks if node has been deleted
+            this.nodes[this.selectedNodeId].setSelected(false);
+        this.selectedNodeId = nodeId.toString();
         this.nodes[this.selectedNodeId].setSelected(true);
     }
 
@@ -132,8 +188,7 @@ class Node {
         this.sectorAngle = 2 * PI / this.numSamples;
         this.selected = false;
         this.direction = 1;
-
-        this.synth = new NodeSynth(synthConfig);
+        this.synth = SynthFactory.createSynth(DEFAULT_SYNTH);
     }
 
     getId() {
@@ -178,6 +233,10 @@ class Node {
         this.samples.pop();
     }
 
+    getSynthName() {
+        return this.synth.getName();
+    }
+
     connectSynth(where) {
         this.synth.connect(where);
     }
@@ -185,6 +244,11 @@ class Node {
     playSample(sample) {
         if (sample)
             this.synth.playNote(sample);
+    }
+
+    changeSynth(synthName) {
+        delete this.synth;
+        this.synth = SynthFactory.createSynth(synthName);
     }
 
     step() {
@@ -251,6 +315,9 @@ class Node {
         for (let i=1; i<numCircles; i++)
             ellipse(0, 0,  size - (size/numCircles)*i);
 
+        fill(255);
+        textSize(32);
+        text(this.id, 0,0);
         // TODO: Integrate animations
         // animationDraw(this.samples[this.currentSample]);
         // test((this.size - 25), 1);
@@ -277,7 +344,9 @@ class Node {
 
 class NodeSynth {
 
-    constructor(synthConfig) {
+    constructor(synthName, synthConfig) {
+        this.name = synthName;
+
         this.octaveShift = synthConfig.octaveShift.map( (elem) => {return elem * 12});
         this.noteDuration = synthConfig.noteDuration;
 
@@ -305,29 +374,35 @@ class NodeSynth {
         if (synthConfig.lfo) {
             this.lfo = new Tone.LFO(synthConfig.lfo.config);
             let connectPoint = synthConfig.lfo.connectTo;
-            for (let key of Object.keys(connectPoint)) {
-                switch (key) {
-                    case "filter":
-                        this.lfo.connect(this.filter[connectPoint[key]]);
-                        break;
-                    case "oscillator1":
-                        this.lfo.connect(this.osc1[connectPoint[key]]);
-                        break;
-                    case "oscillator2":
-                        this.lfo.connect(this.osc2[connectPoint[key]]);
-                        break;
-                    case "oscillator3":
-                        this.lfo.connect(this.osc3[connectPoint[key]]);
-                        break;
-                    case "envelope":
-                        this.lfo.connect(this.ampEnv[connectPoint[key]]);
-                        break;
-                    default:
-                        break;
+            if (connectPoint) {
+                for (let key of Object.keys(connectPoint)) {
+                    switch (key) {
+                        case "filter":
+                            this.lfo.connect(this.filter[connectPoint[key]]);
+                            break;
+                        case "oscillator1":
+                            this.lfo.connect(this.osc1[connectPoint[key]]);
+                            break;
+                        case "oscillator2":
+                            this.lfo.connect(this.osc2[connectPoint[key]]);
+                            break;
+                        case "oscillator3":
+                            this.lfo.connect(this.osc3[connectPoint[key]]);
+                            break;
+                        case "envelope":
+                            this.lfo.connect(this.ampEnv[connectPoint[key]]);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
             this.lfo.start();
         }
+    }
+
+    getName() {
+        return this.name;
     }
 
     connect(where) {
@@ -335,13 +410,17 @@ class NodeSynth {
     }
 
     playNote(note) {
-        console.log(this);
-
         this.osc1.frequency.value = Tone.Frequency(note).transpose(this.octaveShift[0]).toFrequency();
         if (this.osc2)
             this.osc2.frequency.value = Tone.Frequency(note).transpose(this.octaveShift[1]).toFrequency();
         if (this.osc3)
             this.osc3.frequency.value = Tone.Frequency(note).transpose(this.octaveShift[2]).toFrequency();
         this.ampEnv.triggerAttackRelease(this.noteDuration);
+    }
+}
+
+class SynthFactory {
+    static createSynth(synthName) {
+        return new NodeSynth(synthName, SYNTH_CONFIGS[synthName]);
     }
 }
