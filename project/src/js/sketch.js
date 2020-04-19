@@ -51,11 +51,8 @@ function setup() {
 
     // Create Nodes
     nodeManager = new NodeManager();
-
     addNode(socket.id, NODE_TYPES.USER);
-
     socket.emit('add-user-node', {user: socket.id});
-
     nodeManager.setSelectedNode(socket.id);
 
     // addMultipleNodes(TEMP_NUM_NODES, NODE_TYPES.USER);
@@ -63,6 +60,8 @@ function setup() {
 
     // Setup UI
     setupUI();
+
+    socket.emit('connected');
 
 }
 
@@ -356,7 +355,6 @@ document.addEventListener('keydown', function(event) {
 
 socket.on('add-sample-to-remote-node', (data) => {
     nodeManager.addSampleToRemoteNode(data.node, data.note);
-
 });
 
 

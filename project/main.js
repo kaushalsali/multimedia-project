@@ -45,23 +45,40 @@ function handleRequest(req, res) {
 
 var io = require('socket.io').listen(server);
 
+let serverNodeManager = {};
+
 io.sockets.on('connection', function (socket) {
   console.log("Client connected: " + socket.id + " " + Timecode(new Date()).subtract(serverStartTime).toString());
 
+  socket.on('connected', (data) => {
+    for (let node of Object.keys(serverNodeManager)) {
+      socket.emit('add-remote-node', {user: node});
+      for (let sample of serverNodeManager[node]) {
+        socket.emit('add-sample-to-remote-node', {node: node, note: sample});
+      }
+    }
+  });
+
   socket.on('add-user-node', (data) => {
+    if (!(data.user in serverNodeManager))
+      serverNodeManager[data.user] = [];
     socket.broadcast.emit('add-remote-node', data);
+    
   });
 
   socket.on('add-sample-to-user-node', (data) => {
+    serverNodeManager[data.user].push(data.note);
     socket.broadcast.emit('add-sample-to-remote-node', data);
   });
    
   socket.on('clear-user-node', (data) => {
+    serverNodeManager[data.user] = [];
     socket.broadcast.emit('clear-remote-node', data);
   });
 
   socket.on('disconnect', function() {
      console.log("Client " + socket.id + " has disconnected");
+     delete serverNodeManager[socket.id];
      socket.broadcast.emit('delete-remote-node', {user: socket.id});
   });
   }
