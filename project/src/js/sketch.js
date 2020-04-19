@@ -20,12 +20,15 @@ let btnPlay;
 
 // Global view parameters
 let view_max_x_offset = 1000;
-let view_min_x_offset = 0;
+let view_min_x_offset = -1000;
 let view_max_y_offset = 1000;
-let view_min_y_offset = 0;
+let view_min_y_offset = -1000;
 let viewOffsetX = 0;
 let viewOffsetY = 0;
 let viewScale = 1;
+let viewWidth;
+let viewHeight;
+
 
 // Node parameters
 let nodeManager = null;
@@ -44,6 +47,9 @@ function setup() {
     view_min_x_offset = -width/2;
     view_max_y_offset = height/2;
     view_min_y_offset = -height/2;
+    viewWidth = view_max_x_offset - view_min_x_offset + width;
+    viewHeight = view_max_y_offset - view_min_y_offset + height;
+
 
     // Tone Setup
     setupTone();
@@ -73,6 +79,13 @@ function draw() {
     updateViewTranslationParameters();
     push();
     translate(viewOffsetX, viewOffsetY);
+
+    translate(width/2, height/2);
+    fill(COLOR_BACKGROUND_VIEW);
+    rectMode(CENTER);
+    rect(0,0, viewWidth, viewHeight);
+    translate(-width/2, -height/2);
+
     nodeManager.drawNodes();
     pop();
 
@@ -139,9 +152,10 @@ function addNodeToView(id, type) {
     let added = false;
 
     while (!added) { // Possibility of infinite loop !!
+
         console.log('in addNodeToView()');
-        newX = random(NODE_SIZE, viewWidth - NODE_SIZE);
-        newY = random(NODE_SIZE, viewHeight - NODE_SIZE);
+        newX = random(NODE_SIZE, viewWidth - NODE_SIZE) - width/2;
+        newY = random(NODE_SIZE, viewHeight - NODE_SIZE) - height/2;
         // newX = width/2;
         // newY = height/2;
         // Check for overlap with all existing nodes
