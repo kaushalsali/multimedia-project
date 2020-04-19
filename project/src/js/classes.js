@@ -159,7 +159,6 @@ class NodeManager {
             this.nodes[this.selectedNodeId].setSelected(false);
         this.selectedNodeId = nodeId.toString();
         this.nodes[this.selectedNodeId].setSelected(true);
-        console.log('selected:', this.selectedNodeId);
     }
 
     getSelectedNodeId() {
@@ -250,7 +249,6 @@ class Node {
     changeSynth(synthName) {
         delete this.synth;
         this.synth = SynthFactory.createSynth(synthName);
-        console.log(this.synth);
     }
 
     step() {
