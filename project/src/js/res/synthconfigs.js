@@ -3,12 +3,18 @@ const SYNTH_CONFIGS = {"Mid": {}, "Low": {} };
 
 SYNTH_CONFIGS["Mid"] = {
     oscillator1: {
-        type: "square",
-        volume: -6
+        type: "sawtooth",
+        volume: -6,
     },
     oscillator2: {
         type: "sawtooth",
-        volume: -6
+        volume: -6,
+        detune: 5
+    },
+    oscillator3: {
+        type: "sawtooth",
+        volume: -6,
+        detune: 5
     },
     envelope: {
         attack: 0.01,
@@ -33,7 +39,7 @@ SYNTH_CONFIGS["Mid"] = {
         },
     },
     noteDuration: 0.3,
-    octaveShift: 0
+    octaveShift: [-2, 0, 2]  // [osc1, osc2, osc3]
 };
 
 

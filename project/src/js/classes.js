@@ -120,7 +120,7 @@ class NodeManager {
 
 class Node {
 
-    constructor(id, type, x, y, size, synth_config) {
+    constructor(id, type, x, y, size, synthConfig) {
         this.id = id;
         this.type = type;
         this.x = x;
@@ -133,7 +133,7 @@ class Node {
         this.selected = false;
         this.direction = 1;
 
-        this.synth = new NodeSynth(synth_config);
+        this.synth = new NodeSynth(synthConfig);
     }
 
     getId() {
@@ -278,7 +278,7 @@ class Node {
 class NodeSynth {
 
     constructor(synthConfig) {
-        this.octaveShift = synthConfig.octaveShift * 12;
+        this.octaveShift = synthConfig.octaveShift.map( (elem) => {return elem * 12});
         this.noteDuration = synthConfig.noteDuration;
 
         this.filter = new Tone.Filter(synthConfig.filter);
@@ -309,12 +309,12 @@ class NodeSynth {
 
     playNote(note) {
         console.log(this);
-        let freq = Tone.Frequency(note).transpose(this.octaveShift).toFrequency();
-        this.osc1.frequency.value = freq;
+
+        this.osc1.frequency.value = Tone.Frequency(note).transpose(this.octaveShift[0]).toFrequency();
         if (this.osc2)
-            this.osc2.frequency.value = freq;
+            this.osc2.frequency.value = Tone.Frequency(note).transpose(this.octaveShift[1]).toFrequency();
         if (this.osc3)
-            this.osc3.frequency.value = freq;
+            this.osc3.frequency.value = Tone.Frequency(note).transpose(this.octaveShift[2]).toFrequency();
         this.ampEnv.triggerAttackRelease(this.noteDuration);
     }
 }
