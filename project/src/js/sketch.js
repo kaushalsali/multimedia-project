@@ -151,13 +151,16 @@ function addNodeToView(id, type) {
     let overlap = false;
     let added = false;
 
+    let timeLimit = 500;
+    let timeStart = millis();
+
     while (!added) { // Possibility of infinite loop !!
 
-        console.log('in addNodeToView()');
         newX = random(NODE_SIZE, viewWidth - NODE_SIZE) - width/2;
         newY = random(NODE_SIZE, viewHeight - NODE_SIZE) - height/2;
         // newX = width/2;
         // newY = height/2;
+
         // Check for overlap with all existing nodes
         for (let j=0; j<nodes.length; j++) {
             overlap = dist(newX, newY, nodes[j].x, nodes[j].y) < totalInterNodeDistance;
@@ -173,6 +176,11 @@ function addNodeToView(id, type) {
                 created = nodeManager.createRemoteNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']);
             if (created)
                 nodeManager.connectNode(id, nodeConnectionPoint);
+        }
+
+        if (millis() - timeStart > timeLimit) {// If cant add within timelimit stop
+            console.log('View Full. No more space.');
+            break;
         }
     }
 }
