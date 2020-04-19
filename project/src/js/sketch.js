@@ -253,46 +253,46 @@ function setupUI() {
     btnAddNode.size(btnWidth, btnHeight);
     btnAddNode.position((width/2 - btnWidth/2) - btnSpacing * 3, height - 120);
     btnAddNode.addClass("myButton");
-    btnAddNode.mousePressed(addNode);
+    btnAddNode.mousePressed(handleAddNode);
     btnAddNode.html("Add Node");
 
     btnRemoveNode = createButton("Remove Node");
     btnRemoveNode.size(btnWidth, btnHeight);
     btnRemoveNode.position((width/2 - btnWidth/2) - btnSpacing, height - 120);
     btnRemoveNode.addClass("myButton");
-    btnRemoveNode.mousePressed(removeNode);
+    btnRemoveNode.mousePressed(handleRemoveNode);
     btnRemoveNode.html("Remove Node");
 
     btnClear = createButton("Clear Node");
     btnClear.size(btnWidth, btnHeight);
     btnClear.position((width/2 - btnWidth/2) + btnSpacing, height - 120);
     btnClear.addClass("myButton");
-    btnClear.mousePressed(clearNode);
+    btnClear.mousePressed(handleClearNode);
     btnClear.html("Clear Node");
 
     btnPlay = createButton("Play");
     btnPlay.size(btnWidth, btnHeight);
     btnPlay.position((width/2 - btnWidth/2) + btnSpacing * 3, height - 120);
     btnPlay.addClass("myButton");
-    btnPlay.mousePressed(togglePlay);
+    btnPlay.mousePressed(handleTogglePlay);
     btnPlay.html("Play");
 
 }
 
-function clearNode() {
+function handleClearNode() {
     nodeManager.clearUserNode(nodeManager.getSelectedNodeId());
 }
 
-function addNode() {
+function handleAddNode() {
     addNewNodeToViewAtRandom(__temp_id++, NODE_TYPES.USER);
 }
 
-function removeNode() {
+function handleRemoveNode() {
     let selectedNodeId = nodeManager.getSelectedNodeId();
     nodeManager.deleteUserNode(selectedNodeId);
 }
 
-function togglePlay() {
+function handleTogglePlay() {
     if (isPlaying) {
         Tone.Transport.pause();
         btnPlay.html("Play");
