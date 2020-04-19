@@ -1,28 +1,36 @@
 
 class AnimationManager {
-    constructor(id, x, y, size){
-      this.id = id;
+    constructor(x, y, size){
       this.x = x;
       this.y = y;
-      this.size = size;
+      this.size = size - 20;
 
       // Create an instance of each object for each node
       this.lightning = new Lightning();
-      this.expandingCircle = new ExpandingCircle(this.size - 20, 0.5);
-      this.circlestrobe = new circleStrobe(this.x,this.y,this.size - 20);
+      this.expandingCircle = new ExpandingCircle(this.size, 1.5);
+      this.circleStrobe = new CircleStrobe(this.x,this.y,this.size);
+      this.circleFade = new CircleFade(this.x,this.y,this.size);
     }
 
     draw(currentPlaying) {
+      //eval(ANIM_MAPPING[currentPlaying]);
+
+      // If statement is temporary while testing functions and
+      // different color sets. Eventually, implement the commented
+      // out line above.
       if (currentPlaying === 'C4'){
         push();
         this.lightning.draw();
         pop();
       }
-      else if (currentPlaying === 'D4'){
+      if (currentPlaying === 'D4'){
         this.expandingCircle.draw();
       }
-      else if (currentPlaying === 'D4'){
-        this.circlestrobe.draw(30,20,COLOR_BLUES[1]);
+      else if (currentPlaying === 'E4'){
+        this.circleStrobe.draw(COLOR_BLUES[1]);
+      }
+      else if (currentPlaying === 'F4') {
+        this.circleFade.draw("light", true, COLOR_ORANGE);
       }
     }
 }
@@ -32,44 +40,45 @@ class AnimationManager {
 class Lightning {
   constructor() {
     this.trail = [];
+    this.maxVal = 15;
+    this.count = 0;
+    this.numStrikes = 5;  // Max of 5, bounded by this.initLine
+    this.strike = 0;
+    this.initLine = [0, 255, PI, -PI/2, -PI/5];
+    this.randomRotate = PI/2;
+    this.len;
   }
 
   draw(){
-    let maxVal = 15;
-    let count = 0;
-    let len = 10;
-    let numStrikes = 5;  // Max of 5, bounded by initLine
-    let strike = 0;
-    let initLine = [0, 255, PI, -PI/2, -PI/5];
-    let randomRotate = PI/2;
-    for (strike = 0; strike < numStrikes; strike++) {
+    push();
+    for (this.strike = 0; this.strike < this.numStrikes; this.strike++) {
       // For each strike, return to the center
       pop();
       push();
       // Draw maxVal lines as part of a strike.
-      while (count < maxVal) {
-        if (count === 0){
-          rotate(initLine[strike]);
-          len = random(3, 15);
-          line(0, 0, 0, -len);
+      while (this.count < this.maxVal) {
+        if (this.count === 0){
+          rotate(this.initLine[this.strike]);
+          this.len = random(3, 15);
+          line(0, 0, 0, -this.len);
           stroke([255, 255, 255, 255]);
           strokeWeight(2);
-          translate(0, -len);
-          count = count + 1;
+          translate(0, -this.len);
+          this.count = this.count + 1;
         }
         else{
-          randomRotate = PI/4;
-          count = count + 1;
-          len = random(3, 15);
-          rotate(random(-randomRotate, randomRotate));
-          line(0, 0, 0, -len);
-          stroke([255, 255, 255, (255 * ((maxVal-count)/maxVal))]);
+          this.count = this.count + 1;
+          this.len = random(3, 15);
+          rotate(random(-this.randomRotate, this.randomRotate));
+          line(0, 0, 0, -this.len);
+          stroke([255, 255, 255, (255 * ((this.maxVal-this.count)/this.maxVal))]);
           strokeWeight(4);
-          translate(0, -len);
+          translate(0, -this.len);
         }
       }
-      //animCount = 0;
+      this.count = 0;
     }
+  pop();
   }
 }
 
@@ -96,30 +105,32 @@ class ExpandingCircle {
 //expanding concentric circles, solid/black strobe
 //first 3 parameters control position and size
 //increase speed by increasing frame rate (fr) or decreasing nCircles
-class circleStrobe{
+class CircleStrobe{
   constructor(x, y, size){
     this.x = x;
     this.y = y;
     this.size = size;
+    this.minD=2; //diameter of smallest circle;
+    this.d = 2;
+    this.dIncr;
+    this.nCircles = 35;
   }
 
-  draw(fr,nCircles,colorRange){
-    noStroke();
-    frameRate(fr);
-    var minD=2; //diameter of smallest circle;
-    var d;
+  draw(colorRange){
+    push();
+    stroke(colorRange);
+    strokeWeight(2);
     blendMode(DIFFERENCE);
-    var dIncr=ceil((this.size-minD)/nCircles); //num pixels to increment diameter
-    if (frameCount==1){
-      d=minD;
+    this.dIncr=ceil((this.size-this.minD)/this.nCircles); //num pixels to increment diameter
+    this.d+=this.dIncr;
+    if (this.d<=this.size) {
+        fill(colorRange)
+        circle(0, 0,this.d);
     }
-    else {
-      d+=dIncr;
+    else if (this.d > this.size) {
+        this.d = this.minD;
     }
-    if (d<=this.size) {
-        fill(colorStrobe);
-        circle(this.x,this.y,d);
-    }
+    pop();
   }
 }
 
@@ -128,47 +139,69 @@ class circleStrobe{
 //increase speed by increasing frame rate (fr) or decreasing nCircles
 //fadeTo="light" if fading from light to dark, "dark" to reverse it
 //eraseCircles=true to erase radially with black or white after drawing circles
-function circleFade(xCenter,yCenter,maxD,fr,nCircles,fadeTo,eraseCircles,colorRange){
-   noStroke();
-   frameRate(fr);
-   //set lightest and darkest color
-   lightest = color(colorRange[0]);
-   darkest = color(colorRange[2]);
-   minD=10; //diameter of smallest circle;
-   if (fadeTo=="light"){
-     blendMode(DARKEST);
-   }
-   else {
-     blendMode(LIGHTEST);
-   }
-  //num pixels to increment diameter
-   dIncr=ceil((maxD-minD)/nCircles);
-   if (frameCount==1){
-    d=minD;
-   }
-   else {
-    d+=dIncr;
-   }
-   //set color between lightest and darkest
-    p=(nCircles-frameCount)/nCircles;
-    if (d<=maxD){
+class CircleFade {
+  constructor(x, y, size){
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.minD=2; //diameter of smallest circle;
+    this.d = 2;
+    this.dIncr;
+    this.nCircles = 32;
+    this.p = 1;
+    this.lightest;
+    this.darkest;
+  }
+
+  draw(fadeTo,eraseCircles,colorRange) {
+    push();
+    //set lightest and darkest color
+    this.lightest = color(colorRange[0]);
+    this.darkest = color(colorRange[2]);
+
+    strokeWeight(2);
+    if (fadeTo=="light"){
+      blendMode(DARKEST);
+    }
+    else{
+      blendMode(LIGHTEST);
+    }
+    //num pixels to increment diameter
+    this.dIncr=ceil((this.size - (frameCount%30))/this.nCircles);
+    this.d+=this.dIncr;
+    //set color between lightest and darkest
+    //this.p=(this.nCircles-this.d)/this.nCircles;
+    if (this.d<=this.size){
       if (fadeTo=="light"){
-        fill(color(lerpColor(lightest,darkest,p)));
+        fill(color(lerpColor(this.lightest,this.darkest,this.p)));
+        stroke(color(lerpColor(this.lightest,this.darkest,this.p)));
       }
       else {
-        fill(color(lerpColor(lightest,darkest,1-p)));
+        fill(color(lerpColor(this.lightest,this.darkest,1-this.p)));
+        stroke(color(lerpColor(this.lightest,this.darkest,1-this.p)));
       }
-      circle(xCenter,yCenter,d); //draw circle
+      circle(0, 0,this.d); //draw circle
     }
-    if (eraseCircles==true && d>maxD && d/2<=maxD){
+    else if(eraseCircles == false && this.d > this.size){
+      this.d = this.minD;
+    }
+
+    if (eraseCircles==true && this.d>this.size && this.d/2<=this.size){
         if (fadeTo=="light"){
           fill(color(0,0,0));
+          console.log(this.d);
         }
         else{
           fill(color(255,255,255));
         }
-        circle(xCenter,yCenter,d-maxD);
+        circle(0,0,this.d-this.size);
     }
+
+    if (this.d >= this.size * 2){
+      this.d = 2;
+    }
+    pop();
+  }
 }
 
 //star that rotates and expands to fill the circle

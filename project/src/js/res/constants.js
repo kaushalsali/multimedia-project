@@ -7,7 +7,7 @@ const VIEW_SCALE_MIN = 0.2;
 
 //---------------------------------------------------------------------------------
 // Node
-const NODE_SIZE = 120;
+const NODE_SIZE = 138;
 const MAX_SAMPLES = 64;
 const MIN_INTER_NODE_DIST = 100;
 
@@ -66,3 +66,22 @@ const SYNTH_CONFIGS = {
 
 
 //---------------------------------------------------------------------------------
+const ANIM_MAPPING = {
+  'C4': 'this.lightning.draw()',
+  'C#4': 'null',
+  'D4': 'null',
+  'D#4': 'null',
+  'E4': 'null',
+  'F4': 'null',
+  'F#4': 'null',
+  'G4': 'null',
+  'G#4': 'null',
+  'A4': 'null',
+  'A#4': 'null',
+  'B4': 'null',
+  'C5': 'null',
+  'C#5': 'null',
+  'D5': 'null',
+  'D#5': 'null',
+  'E5': 'null'
+}

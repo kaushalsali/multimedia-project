@@ -87,7 +87,7 @@ class Node {
         this.synth = new NodeSynth(synth_config);
         this.interval = 0.3;
 
-        this.animation = new AnimationManager(id, x, y, size);
+        this.animation = new AnimationManager(x, y, size);
     }
 
     getId() {
