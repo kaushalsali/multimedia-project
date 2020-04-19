@@ -305,15 +305,19 @@ function handleTogglePlay() {
 }
 
 function drawGrid() {
-    translate(-(viewWidth - width)/2, -(viewHeight - height)/2);
     let numHor = 100;
     let numVer = 100;
+    translate(-(viewWidth - width)/2, -(viewHeight - height)/2);
     let spacingHor = viewWidth / numHor;
-    let spacingVer = viewWidth / numVer;
     for (let i=0; i<numHor; i++) {
         stroke(0);
         strokeWeight(1);
         line(i*spacingHor, 0, i*spacingHor, viewHeight);
+    }
+    let spacingVer = viewHeight / numVer;
+    for (let i=0; i<numHor; i++) {
+        stroke(0);
+        strokeWeight(1);
         line(0, i*spacingVer, viewWidth, i*spacingVer);
     }
     translate((viewWidth - width)/2, (viewHeight - height)/2);
