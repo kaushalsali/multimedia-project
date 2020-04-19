@@ -56,7 +56,9 @@ function setup() {
 
     // Create Nodes
     nodeManager = new NodeManager();
-    addMultipleNodes(1, NODE_TYPES.USER);
+    let pos = addNewNodeToViewAtRandom(__temp_id++, NODE_TYPES.USER);
+
+    // addMultipleNodes(1, NODE_TYPES.USER);
     //addMultipleNodes(TEMP_NUM_NODES, NODE_TYPES.REMOTE);
 
 
@@ -77,15 +79,12 @@ function draw() {
 
     // Translate view
     updateViewTranslationParameters();
+
+    // Draw
     push();
     translate(viewOffsetX, viewOffsetY);
-
-    translate(width/2, height/2);
-    fill(COLOR_BACKGROUND_VIEW);
-    rectMode(CENTER);
-    rect(0,0, viewWidth, viewHeight);
-    translate(-width/2, -height/2);
-
+    drawViewRect();
+    drawGrid();
     nodeManager.drawNodes();
     pop();
 
@@ -285,7 +284,7 @@ function clearNode() {
 }
 
 function addNode() {
-    addNodeToView(__temp_id++, NODE_TYPES.USER);
+    addNewNodeToViewAtRandom(__temp_id++, NODE_TYPES.USER);
 }
 
 function removeNode() {
@@ -305,6 +304,28 @@ function togglePlay() {
     isPlaying = !isPlaying;
 }
 
+function drawGrid() {
+    translate(-(viewWidth - width)/2, -(viewHeight - height)/2);
+    let numHor = 100;
+    let numVer = 100;
+    let spacingHor = viewWidth / numHor;
+    let spacingVer = viewWidth / numVer;
+    for (let i=0; i<numHor; i++) {
+        stroke(0);
+        strokeWeight(1);
+        line(i*spacingHor, 0, i*spacingHor, viewHeight);
+        line(0, i*spacingVer, viewWidth, i*spacingVer);
+    }
+    translate((viewWidth - width)/2, (viewHeight - height)/2);
+}
+
+function drawViewRect() {
+    translate(width/2, height/2);
+    fill(COLOR_BACKGROUND_VIEW);
+    rectMode(CENTER);
+    rect(0,0, viewWidth, viewHeight);
+    translate(-width/2, -height/2);
+}
 
 document.addEventListener('keydown', function(event) {
 
