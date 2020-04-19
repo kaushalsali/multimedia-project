@@ -10,33 +10,31 @@ class AnimationManager {
       this.expandingCircle = new ExpandingCircle(this.size, 1.5);
       this.circleStrobe = new CircleStrobe(this.x,this.y,this.size);
       this.circleFade = new CircleFade(this.x,this.y,this.size);
+      this.starRotate = new StarRotate(this.x, this.y, this.size);
+      this.spiral = new Spiral(this.x, this.y, this.size);
+      this.vertLines = new VertLines(this.x, this.y, this.size);
+      this.staticStar = new Star(this.x, this.y, this.size);
     }
 
     draw(currentPlaying) {
-      //eval(ANIM_MAPPING[currentPlaying]);
+      eval(ANIM_MAPPING[currentPlaying]);
 
       // If statement is temporary while testing functions and
       // different color sets. Eventually, implement the commented
       // out line above.
-      if (currentPlaying === 'C4'){
-        push();
-        this.lightning.draw();
-        pop();
-      }
-      if (currentPlaying === 'D4'){
-        this.expandingCircle.draw();
-      }
-      else if (currentPlaying === 'E4'){
-        this.circleStrobe.draw(COLOR_BLUES[1]);
-      }
-      else if (currentPlaying === 'F4') {
-        this.circleFade.draw("light", true, COLOR_ORANGE);
-      }
+      // if (currentPlaying === 'C4'){
+      //   this.starRotate.draw(5, -20, COLOR_GREENS);
+      // }
+      // else if (currentPlaying === 'D4'){
+      //   this.expandingCircle.draw();
+      // }
+
     }
 }
 
 
-
+// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 class Lightning {
   constructor() {
     this.trail = [];
@@ -113,7 +111,7 @@ class CircleStrobe{
     this.minD=2; //diameter of smallest circle;
     this.d = 2;
     this.dIncr;
-    this.nCircles = 35;
+    this.nCircles = 32;
   }
 
   draw(colorRange){
@@ -209,96 +207,179 @@ class CircleFade {
 //increase speed by increasing frame rate (fr) or decreasing magnitude of rotation
 //nPoints = number of points on the star
 
-function starRotate(xCenter,yCenter,maxD,speed,nPoints,rotation,colorRange){
-   noStroke();
-   frameRate(fr);
-   push();
-   translate(xCenter, yCenter);
-   rotate(frameCount / rotation);
-   //set lightest and darkest color
-   lightest = color(colorRange[0]);
-   darkest = color(colorRange[2]);
-   p=1-frameCount/fr;
-  fill(color(lerpColor(lightest,darkest,p)));
-   star(x=0,y=0,radius1=maxD/4,radius2=maxD/2,nPoints);
-   pop();
+class StarRotate {
+  constructor(x, y, size){
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.minD=2; //diameter of smallest circle;
+    this.d = 2;
+    this.nPoints;
+    this.p = 1;
+    this.lightest;
+    this.darkest;
+    this.rotation;
+    this.currentRotation = 0;
+
+    this.star = new Star(this.x, this.y, this.size/2);
+  }
+
+  draw(nPoints,rotation,colorRange) {
+    this.nPoints = nPoints;
+    this.rotation = rotation;
+    noStroke();
+    push();
+    //translate(this.x, this.y);
+    rotate(this.currentRotation / this.rotation);
+    //set lightest and darkest color
+    this.lightest = color(colorRange[0]);
+    this.darkest = color(colorRange[2]);
+    this.p=1-this.currentRotation/30;
+    fill(color(lerpColor(this.lightest,this.darkest,this.p)));
+    this.star.draw(this.size, this.size/2,this.nPoints, color(lerpColor(this.lightest,this.darkest,this.p)));
+    this.currentRotation += 1;
+    if (this.currentRotation >= 30) {
+      this.currentRotation = 0;
+    }
+    pop();
+  }
+
 }
 
 //spiral radiating from center outwards
 //xCenter,yCenter,maxD specify size of outer circle
 //increase speed by increasing frame rate (fr) or spread
 //changing spread also changes the spiral shape
-function spiral(xCenter,yCenter,maxD,fr,spread,colorSpiral){
-    frameRate(fr);
-   //initialize parameters controlling shape and spread of spiral
-    if (frameCount==1){
-      angle=10.0;
-      scalar=20;
-    }
-    var x = xCenter + cos(angle) * scalar;
-    var y = xCenter + sin(angle) * scalar;
-    if (x<=xCenter+maxD/2 && y<=yCenter+maxD/2){
+class Spiral {
+  constructor (x, y, size) {
+    this.x = x;  // Previously xCenter
+    this.y = y;  // Previously yCenter
+    this.size = size;
+    this.angle = 8.0;
+    this.scalar = 18;
+    this.xVal;  // Previously x
+    this.yVal;  // Previously y
+  }
+
+  draw(spread,colorSpiral){
+    push();
+    this.xVal = cos(this.angle) * this.scalar;
+    this.yVal = sin(this.angle) * this.scalar;
+    if (this.xVal<=this.size-20 && this.yVal<=this.size-20){
       fill(colorSpiral);
-      circle(x, y, 5);
-      angle += spread;
-      scalar += spread;
+      circle(this.xVal, this.yVal, 8);
+      this.angle += spread;
+      this.scalar += spread;
     }
+    else{
+      this.angle = 8.0;
+      this.scalar = 18;
+    }
+    pop();
+  }
 }
 
 //vertical lines fill from right edge of circle to left
 //xCenter,yCenter,maxD specify size of outer circle
 //increase speed by increasing frame rate (fr) or decreasing number of lines (nLines);
 //direction=LR (left to right) or RL
-function vertLines(xCenter,yCenter,maxD,fr,nLines,colorRange){
-    frameRate(fr);
+class VertLines{
+  constructor (x, y, size) {
+    this.x = x;  // Previously xCenter
+    this.y = y;  // Previously yCenter
+    this.size = size;
+    this.lightest;
+    this.darkest;
+    this.offsetX = this.size / 2;
+    this.spacing;
+    this.currentIteration = 0;
+    this.chordLength;
+    this.p;
+  }
+
+  draw(nLines,colorRange, direction){
+    push();
     noFill();
+
     //circle(xCenter,yCenter,maxD);
     //initialize X coordinate of line
-    if (frameCount==1 && direction=="RL"){
-      offsetX=maxD/2;
+    if (this.currentIteration == 0 && direction == "RL"){
+      this.offsetX = this.size + 10;
     }
-    if (frameCount==1 && direction=="LR"){
-      offsetX=-maxD/2;
+    if (this.currentIteration == 0 && direction == "LR"){
+      this.offsetX = -Math.abs(this.size + 10);
     }
-   //set lightest and darkest color
-   lightest = color(colorRange[0]);
-   darkest = color(colorRange[2]);
+    //set lightest and darkest color
+    this.lightest = color(colorRange[0]);
+    this.darkest = color(colorRange[2]);
 
     //distance between lines
-    spacing=maxD/(nLines-1);
-    r=maxD/2;
+    this.spacing = (this.size * 2) / (nLines-1);
+
     //determine length of chord, start and end coordinates
-    if (frameCount<=nLines){
-      translate(offsetX,0);
-      chordLength=sqrt(r**2-(r-spacing*(frameCount-1))**2);
-      p=frameCount/nLines;
-             stroke(color(lerpColor(lightest,darkest,p)));
+    if (this.currentIteration<=nLines){
+      console.log('in if statement');
+      push();
+      translate(this.offsetX,0);
+      this.chordLength=sqrt(this.size**2-(this.size-this.spacing*(this.currentIteration-1))**2);
+      this.p=this.currentIteration/nLines;
+      strokeWeight(8);
+      stroke(color(lerpColor(this.lightest,this.darkest,this.p)));
       if (direction=="RL"){
-      line(xCenter,yCenter-chordLength,xCenter,yCenter+chordLength);
-      offsetX-=spacing;
+        line(0,0-this.chordLength,0,0+this.chordLength);
+        this.offsetX-=this.spacing;
       }
       else if (direction=="LR"){
-          line(xCenter,yCenter-chordLength,xCenter,yCenter+chordLength);
-      offsetX+=spacing;
+          line(0,0-this.chordLength,0,0+this.chordLength);
+          this.offsetX+=this.spacing;
       }
+      this.currentIteration += 1;
+      pop();
     }
+    else {
+      this.currentIteration = 0;
+    }
+    pop();
+  }
   }
 
 
 //star function from p5 website examples
-function star(x, y, radius1, radius2, npoints) {
-  let angle = TWO_PI / npoints;
-  let halfAngle = angle / 2.0;
-  beginShape();
-  for (let a = 0; a < TWO_PI; a += angle) {
-    let sx = x + cos(a) * radius2;
-    let sy = y + sin(a) * radius2;
-    vertex(sx, sy);
-    sx = x + cos(a + halfAngle) * radius1;
-    sy = y + sin(a + halfAngle) * radius1;
-    vertex(sx, sy);
+class Star{
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.sx;
+    this.sy;
+    this.angle;
+    this.halfAngle;
+    this.currentIteration = 0;
+    this.rotation;
   }
-  endShape(CLOSE);
+  draw(radius1, radius2, nPoints, c) {
+    this.angle = TWO_PI / nPoints;
+    this.halfAngle = this.angle / 2.0;
+    beginShape();
+    fill(c);
+    if(this.currentIteration == 0) {
+      this.rotation = random(-10, 10);
+    }
+    rotate(this.rotation);
+    for (var a = 0; a < TWO_PI; a += this.angle) {
+      this.sx = 0 + cos(a) * radius2;
+      this.sy = 0 + sin(a) * radius2;
+      vertex(this.sx, this.sy);
+      this.sx = 0 + cos(a + this.halfAngle) * radius1;
+      this.sy = 0 + sin(a + this.halfAngle) * radius1;
+      vertex(this.sx, this.sy);
+    }
+    endShape(CLOSE);
+    this.currentIteration += 1;
+    console.log(this.currentIteration);
+    if (this.currentIteration >= 30) {
+      this.currentIteration = 0;
+    }
+}
 }
 
 //function calls for animations with different parameters

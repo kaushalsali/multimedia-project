@@ -212,9 +212,9 @@ class Node {
         // Inner gray circles
         strokeWeight(1);
         if (this.isSelected())
-            stroke(70);
+            stroke([70, 70, 70, 255]);
         else
-            stroke(10);
+            stroke([70, 70, 70, 0]);
         let numCircles = 10;
         let size = this.size  * 0.85;
         for (let i=1; i<numCircles; i++)
