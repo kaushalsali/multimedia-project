@@ -1,4 +1,4 @@
-const SYNTH_CONFIGS = {"Mid": {}, "Low": {} };
+const SYNTH_CONFIGS = {"Mid": {}, "Low": {}, "new":{} };
 
 
 SYNTH_CONFIGS["Mid"] = {
@@ -9,12 +9,12 @@ SYNTH_CONFIGS["Mid"] = {
     oscillator2: {
         type: "sawtooth",
         volume: -6,
-        detune: 5
+        detune: -10
     },
     oscillator3: {
         type: "sawtooth",
         volume: -6,
-        detune: 5
+        detune: 10
     },
     envelope: {
         attack: 0.01,
@@ -33,13 +33,16 @@ SYNTH_CONFIGS["Mid"] = {
         config: {
             type: "sine",
             frequency: 10,
-            min: -5,
-            max: 5,
+            min: 0,
+            max: 1000,
             amplitude: 1
         },
+        connectTo: {
+            "filter": "frequency"
+        }
     },
     noteDuration: 0.3,
-    octaveShift: [-2, 0, 2]  // [osc1, osc2, osc3]
+    octaveShift: [0, 0, 0]  // [osc1, osc2, osc3]
 };
 
 
