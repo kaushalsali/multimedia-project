@@ -8,6 +8,11 @@ class NodeManager {
         this.selectedNodeId = 0;
     }
 
+    hasNode(nodeId) {
+        nodeId = nodeId.toString();
+        return Object.keys(this.nodes).includes(nodeId);
+    }
+
     getNumNodes() {
         return Object.keys(this.nodes).length;
     }
@@ -44,20 +49,53 @@ class NodeManager {
         return this.remoteNodeIds;
     }
 
-    createNode(nodeId, nodeType, x, y, size, synth_config) {
-        if (!(nodeId in Object.keys(this.nodes))) {
-            this.nodes[nodeId] = new Node(nodeId, nodeType, x, y, size, synth_config);
-            if (nodeType === NODE_TYPES.REMOTE)
-                this.remoteNodeIds.push(nodeId);
-            else if (nodeType === NODE_TYPES.USER)
-                this.userNodeIds.push(nodeId);
+    createUserNode(nodeId, x, y, size, synth_config) {
+        if (this.userNodeIds.length < MAX_USER_NODES) {
+            return this._createNode(nodeId, NODE_TYPES.USER, x, y, size, synth_config);
         }
-        else
-            console.log('ERROR: Node with id: ' + nodeId + ' already exists.')
+        return false;
     }
 
-    deleteNode(nodeId) {
-        if (nodeId in Object.keys(this.nodes)) {
+    createRemoteNode(nodeId, x, y, size, synth_config) {
+        return this._createNode(nodeId, NODE_TYPES.REMOTE, x, y, size, synth_config);
+    }
+
+    _createNode(nodeId, nodeType, x, y, size, synth_config) {
+        nodeId = nodeId.toString();
+        if (this.getNumNodes() < MAX_TOTAL_NODES) {
+            if (!(Object.keys(this.nodes).includes(nodeId))) {
+                this.nodes[nodeId] = new Node(nodeId, nodeType, x, y, size, synth_config);
+                if (nodeType === NODE_TYPES.REMOTE)
+                    this.remoteNodeIds.push(nodeId);
+                else if (nodeType === NODE_TYPES.USER)
+                    this.userNodeIds.push(nodeId);
+                return true;
+            } else {
+                console.log('ERROR: Node with id: ' + nodeId + ' already exists.');
+                return false;
+            }
+        }
+        else {
+            console.log('ERROR: Maximum number of total nodes reached.');
+            return false;
+        }
+    }
+
+    deleteUserNode(nodeId) {
+        nodeId = nodeId.toString();
+        if (nodeManager.getNodeType(nodeId) === NODE_TYPES.USER)
+            this._deleteNode(nodeId);
+    }
+
+    deleteRemoteNode(nodeId) {
+        nodeId = nodeId.toString();
+        if (nodeManager.getNodeType(nodeId) === NODE_TYPES.REMOTE)
+            this._deleteNode(nodeId);
+    }
+
+    _deleteNode(nodeId) {
+        nodeId = nodeId.toString();
+        if (Object.keys(this.nodes).includes(nodeId)) {
             let type = this.nodes[nodeId].getType();
             if (type === NODE_TYPES.USER)
                 this.userNodeIds.splice(this.userNodeIds.indexOf(nodeId), 1);
@@ -66,7 +104,7 @@ class NodeManager {
             delete this.nodes[nodeId];
         }
         else
-            console.log('ERROR: Node with id: ' + nodeId + ' does not exists.')
+            console.log('ERROR: Node with id: ' + nodeId + ' does not exists.');
     }
 
     addSampleToUserNode(nodeId, sample) {

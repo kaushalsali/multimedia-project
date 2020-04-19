@@ -13,8 +13,10 @@ let filter;
 let nodeConnectionPoint;
 
 // UI
+let btnAddNode;
+let btnRemoveNode;
+let btnClear;
 let btnPlay;
-let btnRecord;
 
 // Global view parameters
 let view_max_x_offset = 1000;
@@ -130,8 +132,6 @@ function addMultipleNodes(numNodes, type) {
  * Creates and adds a node to the view such that it doesn't overlap with existing nodes.
  */
 function addNodeToView(id, type) {
-    let viewWidth = view_max_x_offset - view_min_x_offset;
-    let viewHeight = view_max_y_offset - view_min_y_offset;
     let totalInterNodeDistance = NODE_SIZE * 2 + MIN_INTER_NODE_DIST;
     let nodes = nodeManager.getAllNodes();
     let newX, newY;
@@ -151,10 +151,14 @@ function addNodeToView(id, type) {
                 break;
         }
         if (!overlap) {
-            //let synths = Object.keys(SYNTH_CONFIGS);
-            nodeManager.createNode(id, type, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']); //TODO: Replace Temp Synth initialization with player.
-            nodeManager.connectNode(id, nodeConnectionPoint);
             added = true;
+            let created = false;
+            if (type === NODE_TYPES.USER)
+                created = nodeManager.createUserNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+            else if (type === NODE_TYPES.REMOTE)
+                created = nodeManager.createRemoteNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+            if (created)
+                nodeManager.connectNode(id, nodeConnectionPoint);
         }
     }
 }
@@ -246,8 +250,7 @@ function addNode() {
 
 function removeNode() {
     let selectedNodeId = nodeManager.getSelectedNodeId();
-    if (nodeManager.getNodeType(selectedNodeId) === NODE_TYPES.USER)
-        nodeManager.deleteNode(selectedNodeId);
+    nodeManager.deleteUserNode(selectedNodeId);
 }
 
 function togglePlay() {
