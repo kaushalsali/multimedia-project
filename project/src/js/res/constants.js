@@ -55,30 +55,7 @@ const COLOR_BLACK = [0, 0, 0];
 
 //---------------------------------------------------------------------------------
 // Synth configs
-const SYNTH_CONFIGS = {
-    "square": {
-        oscillator  : {
-            type  : "square"
-        }  ,
-        envelope  : {
-            attack  : 0.0001 ,
-                decay  : 0.001 ,
-                sustain  : 0.5,
-                release  : 3,
-        }
-    },
-    "sine": {
-        oscillator  : {
-            type  : "sine"
-        }  ,
-        envelope  : {
-            attack  : 0.0001 ,
-            decay  : 0.001 ,
-            sustain  : 0.5,
-            release  : 3,
-        }
-    }
-};
+
 
 
 //---------------------------------------------------------------------------------
