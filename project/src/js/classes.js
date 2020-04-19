@@ -18,10 +18,12 @@ class NodeManager {
     }
 
     getNode(nodeId) {
+        nodeId = nodeId.toString();
         return this.nodes[nodeId];
     }
 
     getNodeType(nodeId) {
+        nodeId = nodeId.toString();
         return this.nodes[nodeId].getType();
     }
 
@@ -108,22 +110,22 @@ class NodeManager {
     }
 
     addSampleToUserNode(nodeId, sample) {
-        if (nodeId in this.userNodeIds)
+        if (this.userNodeIds.includes(nodeId.toString()))
             this.nodes[nodeId].addSample(sample)
     }
 
     addSampleToRemoteNode(nodeId, sample) {
-        if (nodeId in this.remoteNodeIds)
+        if (this.userNodeIds.includes(nodeId.toString()))
             this.nodes[nodeId].addSample(sample)
     }
 
     clearUserNode(nodeId) {
-        if (nodeId in this.userNodeIds)
+        if (this.userNodeIds.includes(nodeId.toString()))
             this.nodes[nodeId].clearSamples();
     }
 
     clearRemoteNode(nodeId) {
-        if (nodeId in this.remoteNodeIds)
+        if (this.userNodeIds.includes(nodeId.toString()))
             this.nodes[nodeId].clearSamples();
     }
 
@@ -142,9 +144,9 @@ class NodeManager {
     }
 
     setSelectedNode(nodeId) {
-        if (this.selectedNodeId in Object.keys(this.nodes)) // checks if node has been deleted
+        if (Object.keys(this.nodes).includes(this.selectedNodeId)) // checks if node has been deleted
             this.nodes[this.selectedNodeId].setSelected(false);
-        this.selectedNodeId = nodeId;
+        this.selectedNodeId = nodeId.toString();
         this.nodes[this.selectedNodeId].setSelected(true);
     }
 
@@ -378,8 +380,6 @@ class NodeSynth {
     }
 
     playNote(note) {
-        console.log(this);
-
         this.osc1.frequency.value = Tone.Frequency(note).transpose(this.octaveShift[0]).toFrequency();
         if (this.osc2)
             this.osc2.frequency.value = Tone.Frequency(note).transpose(this.octaveShift[1]).toFrequency();
