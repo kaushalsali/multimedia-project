@@ -12,6 +12,7 @@ const MAX_TOTAL_NODES = 100;
 const NODE_SIZE = 120;
 const MAX_SAMPLES = 64;
 const MIN_INTER_NODE_DIST = 50;
+const DEFAULT_SYNTH = SYNTH.MID;
 const NODE_TYPES = {
     USER: 'user',
     REMOTE: 'remote'

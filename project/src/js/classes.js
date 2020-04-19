@@ -115,7 +115,7 @@ class NodeManager {
     }
 
     addSampleToRemoteNode(nodeId, sample) {
-        if (this.userNodeIds.includes(nodeId.toString()))
+        if (this.remoteNodeIds.includes(nodeId.toString()))
             this.nodes[nodeId].addSample(sample)
     }
 
@@ -125,9 +125,20 @@ class NodeManager {
     }
 
     clearRemoteNode(nodeId) {
-        if (this.userNodeIds.includes(nodeId.toString()))
+        if (this.remoteNodeIds.includes(nodeId.toString()))
             this.nodes[nodeId].clearSamples();
     }
+
+    setUserNodeSynth(nodeId, synthName) {
+        if (this.userNodeIds.includes(nodeId.toString()))
+            this.nodes[nodeId].changeSynth(synthName);
+    }
+
+    setRemoteNodeSynth(nodeId, synthName) {
+        if (this.userNodeIds.includes(nodeId.toString()))
+            this.nodes[nodeId].changeSynth(synthName);
+    }
+
 
     drawNodes() {
         for (let nodeId in this.nodes) {
@@ -178,8 +189,7 @@ class Node {
         this.sectorAngle = 2 * PI / this.numSamples;
         this.selected = false;
         this.direction = 1;
-
-        this.synth = new NodeSynth(synthConfig);
+        this.synth = SynthFactory.createSynth(DEFAULT_SYNTH);
     }
 
     getId() {
@@ -224,6 +234,10 @@ class Node {
         this.samples.pop();
     }
 
+    getSynthName() {
+        return this.synth.getName();
+    }
+
     connectSynth(where) {
         this.synth.connect(where);
     }
@@ -231,6 +245,12 @@ class Node {
     playSample(sample) {
         if (sample)
             this.synth.playNote(sample);
+    }
+
+    changeSynth(synthName) {
+        delete this.synth;
+        this.synth = SynthFactory.createSynth(synthName);
+        console.log(this.synth);
     }
 
     step() {
@@ -326,7 +346,9 @@ class Node {
 
 class NodeSynth {
 
-    constructor(synthConfig) {
+    constructor(synthName, synthConfig) {
+        this.name = synthName;
+
         this.octaveShift = synthConfig.octaveShift.map( (elem) => {return elem * 12});
         this.noteDuration = synthConfig.noteDuration;
 
@@ -354,29 +376,35 @@ class NodeSynth {
         if (synthConfig.lfo) {
             this.lfo = new Tone.LFO(synthConfig.lfo.config);
             let connectPoint = synthConfig.lfo.connectTo;
-            for (let key of Object.keys(connectPoint)) {
-                switch (key) {
-                    case "filter":
-                        this.lfo.connect(this.filter[connectPoint[key]]);
-                        break;
-                    case "oscillator1":
-                        this.lfo.connect(this.osc1[connectPoint[key]]);
-                        break;
-                    case "oscillator2":
-                        this.lfo.connect(this.osc2[connectPoint[key]]);
-                        break;
-                    case "oscillator3":
-                        this.lfo.connect(this.osc3[connectPoint[key]]);
-                        break;
-                    case "envelope":
-                        this.lfo.connect(this.ampEnv[connectPoint[key]]);
-                        break;
-                    default:
-                        break;
+            if (connectPoint) {
+                for (let key of Object.keys(connectPoint)) {
+                    switch (key) {
+                        case "filter":
+                            this.lfo.connect(this.filter[connectPoint[key]]);
+                            break;
+                        case "oscillator1":
+                            this.lfo.connect(this.osc1[connectPoint[key]]);
+                            break;
+                        case "oscillator2":
+                            this.lfo.connect(this.osc2[connectPoint[key]]);
+                            break;
+                        case "oscillator3":
+                            this.lfo.connect(this.osc3[connectPoint[key]]);
+                            break;
+                        case "envelope":
+                            this.lfo.connect(this.ampEnv[connectPoint[key]]);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
             this.lfo.start();
         }
+    }
+
+    getName() {
+        return this.name;
     }
 
     connect(where) {
@@ -390,5 +418,11 @@ class NodeSynth {
         if (this.osc3)
             this.osc3.frequency.value = Tone.Frequency(note).transpose(this.octaveShift[2]).toFrequency();
         this.ampEnv.triggerAttackRelease(this.noteDuration);
+    }
+}
+
+class SynthFactory {
+    static createSynth(synthName) {
+        return new NodeSynth(synthName, SYNTH_CONFIGS[synthName]);
     }
 }

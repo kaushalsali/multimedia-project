@@ -1,7 +1,11 @@
-const SYNTH_CONFIGS = {"Mid": {}, "Low": {}, "new":{} };
+const SYNTH = {
+    MID: "Mid",
+    LOW: "Low"
+};
 
+const SYNTH_CONFIGS = {};
 
-SYNTH_CONFIGS["Mid"] = {
+SYNTH_CONFIGS[SYNTH.MID] = {
     oscillator1: {
         type: "sawtooth",
         volume: -6,
@@ -48,7 +52,7 @@ SYNTH_CONFIGS["Mid"] = {
 
 
 
-SYNTH_CONFIGS["Low"] = {
+SYNTH_CONFIGS[SYNTH.LOW] = {
     oscillator1: {
         type: "square",
         volume: -6
@@ -70,20 +74,19 @@ SYNTH_CONFIGS["Low"] = {
         Q  : 1 ,
         gain  : 0
     },
-    lfo: {
-        config: {
-            type: "sine",
-            frequency: "4n",
-            min: 0,
-            max: 1,
-            amplitude: 1
-        },
-        connectTo: null  // Initialize after defining this object.
-    },
+    // lfo: {
+    //     config: {
+    //         type: "sine",
+    //         frequency: "4n",
+    //         min: 0,
+    //         max: 1,
+    //         amplitude: 1
+    //     },
+    //     connectTo: null
+    // },
     noteDuration: 0.3,
-    octaveShift: 0
+    octaveShift: [0, 0, 0]
 };
-// SYNTH_CONFIGS["Low"].lfo.connectTo = SYNTH_CONFIGS["Low"].filter.frequency;  // LFO Connection
 
 
 

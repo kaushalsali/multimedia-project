@@ -16,6 +16,7 @@ let nodeConnectionPoint;
 let btnAddNode;
 let btnRemoveNode;
 let btnClear;
+let selSynth;
 let btnPlay;
 
 // Global view parameters
@@ -97,8 +98,10 @@ function mousePressed() {
         let correctedNodeX = ((node.x - width/2) * viewScale + width/2) + (viewOffsetX * viewScale) ;
         let correctedNodeY = ((node.y - height/2) * viewScale + height/2) + (viewOffsetY * viewScale);
         let distance = dist(mouseX, mouseY, correctedNodeX, correctedNodeY);
-        if (distance < NODE_SIZE * viewScale) {
+        if (distance < NODE_SIZE * viewScale) { // Node selected
             nodeManager.setSelectedNode(node.getId());
+            selSynth.selected(node.getSynthName());
+
         }
     }
 }
@@ -270,9 +273,19 @@ function setupUI() {
     btnClear.mousePressed(handleClearNode);
     btnClear.html("Clear Node");
 
+    selSynth = createSelect(false);
+    selSynth.size(btnWidth, btnHeight);
+    selSynth.position((width/2 - btnWidth/2) + btnSpacing * 3, height - 120);
+    selSynth.addClass("myButton");
+    selSynth.changed(handleChangeSynth);
+    for (let instrument in SYNTH_CONFIGS)
+        selSynth.option(instrument);
+    selSynth.selected(0);
+
+
     btnPlay = createButton("Play");
     btnPlay.size(btnWidth, btnHeight);
-    btnPlay.position((width/2 - btnWidth/2) + btnSpacing * 3, height - 120);
+    btnPlay.position((width/2 - btnWidth/2), height - 170);
     btnPlay.addClass("myButton");
     btnPlay.mousePressed(handleTogglePlay);
     btnPlay.html("Play");
@@ -288,8 +301,14 @@ function handleAddNode() {
 }
 
 function handleRemoveNode() {
-    let selectedNodeId = nodeManager.getSelectedNodeId();
-    nodeManager.deleteUserNode(selectedNodeId);
+    nodeManager.deleteUserNode(nodeManager.getSelectedNodeId());
+}
+
+function handleChangeSynth() {
+    console.log(selSynth.value());
+    let id = nodeManager.getSelectedNodeId();
+    nodeManager.setUserNodeSynth(id, selSynth.value());
+    nodeManager.connectNode(id, nodeConnectionPoint);
 }
 
 function handleTogglePlay() {
