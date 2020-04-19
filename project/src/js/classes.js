@@ -148,6 +148,7 @@ class NodeManager {
             this.nodes[this.selectedNodeId].setSelected(false);
         this.selectedNodeId = nodeId.toString();
         this.nodes[this.selectedNodeId].setSelected(true);
+        console.log('selected:', this.selectedNodeId);
     }
 
     getSelectedNodeId() {
@@ -296,6 +297,9 @@ class Node {
         for (let i=1; i<numCircles; i++)
             ellipse(0, 0,  size - (size/numCircles)*i);
 
+        fill(255);
+        textSize(32);
+        text(this.id, 0,0);
         // TODO: Integrate animations
         // animationDraw(this.samples[this.currentSample]);
         // test((this.size - 25), 1);

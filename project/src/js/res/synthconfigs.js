@@ -33,8 +33,8 @@ SYNTH_CONFIGS["Mid"] = {
         config: {
             type: "sine",
             frequency: 10,
-            min: 0,
-            max: 1000,
+            min: 300,
+            max: 600,
             amplitude: 1
         },
         connectTo: {

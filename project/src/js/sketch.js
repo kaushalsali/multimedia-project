@@ -135,16 +135,31 @@ function updateViewTranslationParameters() {
 
 
 let __temp_id = 0; //TODO: Properly set id later.
-function addMultipleNodes(numNodes, type) {
+
+function addMultipleNodes(numNodes, type) { //TODO: this is a temporary function
     for (let i=0; i<numNodes; i++) {
-        addNodeToView(__temp_id++, type);
+        addNewNodeToViewAtRandom(__temp_id++, type);
     }
+}
+
+
+/*
+ * Creates and adds a node to the view such that it doesn't overlap with existing nodes.
+ */
+function addNewNodeToViewAt(id, type, x, y) {
+    let created = false;
+    if (type === NODE_TYPES.USER)
+        created = nodeManager.createUserNode(id, x, y, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+    else if (type === NODE_TYPES.REMOTE)
+        created = nodeManager.createRemoteNode(id, x, y, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+    if (created)
+        nodeManager.connectNode(id, nodeConnectionPoint);
 }
 
 /*
  * Creates and adds a node to the view such that it doesn't overlap with existing nodes.
  */
-function addNodeToView(id, type) {
+function addNewNodeToViewAtRandom(id, type) {
     let totalInterNodeDistance = NODE_SIZE * 2 + MIN_INTER_NODE_DIST;
     let nodes = nodeManager.getAllNodes();
     let newX, newY;
@@ -174,13 +189,16 @@ function addNodeToView(id, type) {
                 created = nodeManager.createUserNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']);
             else if (type === NODE_TYPES.REMOTE)
                 created = nodeManager.createRemoteNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']);
-            if (created)
+            if (created) {
                 nodeManager.connectNode(id, nodeConnectionPoint);
+                return {'x': newX, 'y': newY};
+            }
+            return null;
         }
 
         if (millis() - timeStart > timeLimit) {// If cant add within timelimit stop
             console.log('View Full. No more space.');
-            break;
+            return null;
         }
     }
 }
