@@ -16,8 +16,39 @@ class AnimationManager {
       this.staticStar = new Star(this.x, this.y, this.size);
     }
 
+    switch(animNum){
+      switch (animNum) {
+        case 'anim1':
+          this.lightning.draw();
+          break;
+        case 'anim2':
+          this.expandingCircle.draw();
+          break;
+        case 'anim3':
+          this.circleFade.draw("light", true, COLOR_ORANGE);
+          break;
+        case 'anim4':
+          this.starRotate.draw(5, -20, COLOR_GREENS);
+          break;
+        case 'anim5':
+          this.circleStrobe.draw(COLOR_BLUES[1]);
+          break;
+        case 'anim6':
+          this.spiral.draw(2, COLOR_BLUES[1]);
+          break;
+        case 'anim7':
+          this.vertLines.draw(32,COLOR_PURPLES,"RL");
+          break;
+        case 'anim8':
+          this.staticStar.draw(this.size, this.size/2, 5, COLOR_ORANGE[2]);
+          break;
+      }
+    }
+
     draw(currentPlaying) {
-      eval(ANIM_MAPPING[currentPlaying]);
+      this.switch(ANIM_MAPPING[currentPlaying]);
+      //console.log(ANIM_MAPPING[currentPlaying]);
+      //console.log(this.anim_mapping['anim1']);
 
       // If statement is temporary while testing functions and
       // different color sets. Eventually, implement the commented

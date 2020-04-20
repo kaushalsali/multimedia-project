@@ -67,14 +67,14 @@ const SYNTH_CONFIGS = {
 
 //---------------------------------------------------------------------------------
 const ANIM_MAPPING = {
-  'C4': 'this.lightning.draw()',
-  'C#4': 'this.expandingCircle.draw()',
-  'D4': 'this.circleFade.draw("light", true, COLOR_ORANGE)',
-  'D#4': 'this.starRotate.draw(5, -20, COLOR_GREENS)',
-  'E4': 'this.circleStrobe.draw(COLOR_BLUES[1])',
-  'F4': 'this.spiral.draw(2, COLOR_BLUES[1])',
-  'F#4': 'this.vertLines.draw(32,COLOR_PURPLES,"RL")',
-  'G4': 'this.staticStar.draw(this.size, this.size/2, 5, COLOR_ORANGE[2])',
+  'C4': 'anim1',
+  'C#4': 'anim2',
+  'D4': 'anim3',
+  'D#4': 'anim4',
+  'E4': 'anim5',
+  'F4': 'anim6',
+  'F#4': 'anim7',
+  'G4': 'anim8',
   'G#4': 'null',
   'A4': 'null',
   'A#4': 'null',
