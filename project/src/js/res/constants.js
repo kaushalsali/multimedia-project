@@ -64,27 +64,32 @@ const SYNTH_CONFIGS = {
     }
 };
 
-const ANIM = {
-    LIGHTNING: "anim2",
-    STROBE: "strobe"
-};
-const ANIM_MAPPINGS = {
-    "C4": ANIM.LIGHTNING,
-    "D4": ANIM.STROBE
-}
 
 //---------------------------------------------------------------------------------
-const ANIM_MAPPING = {
-  'C4': 'anim1',
-  'C#4': 'anim2',
-  'D4': 'anim3',
-  'D#4': 'anim4',
-  'E4': 'anim5',
-  'F4': 'anim6',
-  'F#4': 'anim7',
-  'G4': 'anim8',
-  'G#4': 'null',
-  'A4': 'null',
+const ANIM = {
+    LIGHTNING: "anim2",
+    EMPTY_CIRCLE: "unfilled expanding cirecle",
+    FADE_ORANGE: "circleFade with orange",
+    ROT_STAR_GREEN: "green gradient rotating star",
+    STROBE_BLUE: "blue circleStrobe",
+    SPIRAL_BLUE: "blue spiral",
+    VERT_PURPLE: "purple vertical lines",
+    STATIC_STAR_ORANGE: "orange static star",
+    RAD_PURPLE: "purple radiateLines",
+    ACROSS_PURPLE: "fill Across"
+};
+
+const ANIM_MAPPINGS = {
+  'C4': ANIM.LIGHTNING,
+  'C#4': ANIM.EMPTY_CIRCLE,
+  'D4': ANIM.FADE_ORANGE,
+  'D#4': ANIM.ROT_STAR_GREEN,
+  'E4': ANIM.STROBE_BLUE,
+  'F4': ANIM.SPIRAL_BLUE,
+  'F#4': ANIM.VERT_PURPLE,
+  'G4': ANIM.STATIC_STAR_ORANGE,
+  'G#4': ANIM.RAD_PURPLE,
+  'A4': ANIM.ACROSS_PURPLE,
   'A#4': 'null',
   'B4': 'null',
   'C5': 'null',
@@ -93,4 +98,3 @@ const ANIM_MAPPING = {
   'D#5': 'null',
   'E5': 'null'
 }
-

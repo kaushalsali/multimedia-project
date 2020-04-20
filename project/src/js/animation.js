@@ -6,60 +6,66 @@ class AnimationManager {
       this.size = size - 20;
 
       // Create an instance of each object for each node
-      this.lightning = new Lightning();
-      this.expandingCircle = new ExpandingCircle(this.size, 3.4);
-      this.circleStrobe = new CircleStrobe(this.x,this.y,this.size);
-      this.circleFade = new CircleFade(this.x,this.y,this.size);
-      this.starRotate = new StarRotate(this.x, this.y, this.size);
-      this.spiral = new Spiral(this.x, this.y, this.size);
-      this.vertLines = new VertLines(this.x, this.y, this.size);
-      this.staticStar = new Star(this.x, this.y, this.size);
-      
+      this.animationHandler = {
+        'lightning': new Lightning(),
+        'expandingCircle': new ExpandingCircle(this.size, 3.4),
+        'circleStrobe': new CircleStrobe(this.x,this.y,this.size),
+        'circleFade': new CircleFade(this.x,this.y,this.size),
+        'starRotate': new StarRotate(this.x, this.y, this.size),
+        'spiral': new Spiral(this.x, this.y, this.size),
+        'vertLines': new VertLines(this.x, this.y, this.size),
+        'staticStar': new Star(this.x, this.y, this.size),
+        'radiateLines': new RadiateLines(this.x, this.y, this.size),
+        'fillAcross': new FillAcross(this.x, this.y, this.size)
+      }
+
       this.prevAnim;
       this.trigger = false;
     }
 
-    draw(currentplaying){
-
-      let animNum = ANIM_MAPPINGS[currentPlaying];
-      if (animNum != this.prevAnim) {
+    draw(currentPlaying){
+      let currentAnim = ANIM_MAPPINGS[currentPlaying];
+      if (currentAnim != this.prevAnim) {
         this.trigger = true;
-        this.prevAnim = animNum;
+        this.prevAnim = currentAnim;
       }
       else
         this.trigger = false;
 
-      switch (animNum) {
+      switch (currentAnim) {
         case ANIM.LIGHTNING:
-          this.lightning.draw();
+          this.animationHandler['lightning'].draw();
           break;
-        case ANIM.STROBE:
-          this.expandingCircle.draw(this.trigger);
+        case ANIM.EMPTY_CIRCLE:
+          this.animationHandler['expandingCircle'].draw(this.trigger);
           break;
-        case 'anim3':
-          this.circleFade.draw("light", true, COLOR_ORANGE, this.trigger);
+        case ANIM.FADE_ORANGE:
+          this.animationHandler['circleFade'].draw("light", true, COLOR_ORANGE, this.trigger);
           break;
-        case 'anim4':
-          this.starRotate.draw(5, -20, COLOR_GREENS, this.trigger);
+        case ANIM.ROT_STAR_GREEN:
+          this.animationHandler['starRotate'].draw(5, -20, COLOR_GREENS, this.trigger);
           break;
-        case 'anim5':
-          this.circleStrobe.draw(COLOR_BLUES[1], this.trigger);
+        case ANIM.STROBE_BLUE:
+          this.animationHandler['circleStrobe'].draw(COLOR_BLUES[1], this.trigger);
           break;
-        case 'anim6':
-          this.spiral.draw(2, COLOR_BLUES[1], this.trigger);
+        case ANIM.SPIRAL_BLUE:
+          this.animationHandler['spiral'].draw(2, COLOR_BLUES[1], this.trigger);
           break;
-        case 'anim7':
-          this.vertLines.draw(32,COLOR_PURPLES,"RL", this.trigger);
+        case ANIM.VERT_PURPLE:
+          this.animationHandler['vertLines'].draw(32,COLOR_PURPLES,"RL", this.trigger);
           break;
-        case 'anim8':
-          this.staticStar.draw(this.size, this.size/2, 5, COLOR_ORANGE[2], this.trigger);
+        case ANIM.STATIC_STAR_ORANGE:
+          this.animationHandler['staticStar'].draw(this.size, this.size/2, 5, COLOR_ORANGE[2], this.trigger);
+          break;
+        case ANIM.RAD_PURPLE:
+          this.animationHandler['radiateLines'].draw(COLOR_PURPLES,'L', 30, this.trigger);
+          break;
+        case ANIM.ACROSS_PURPLE:
+          this.animationHandler['fillAcross'].draw(COLOR_PURPLES,'B', this.trigger);
           break;
       }
     }
 
-    draw(currentPlaying) {
-      this.switch(ANIM_MAPPINGS[currentPlaying]);
-    }
 }
 
 
@@ -420,7 +426,6 @@ class VertLines{
 
     //determine length of chord, start and end coordinates
     if (this.currentIteration<=nLines){
-      console.log('in if statement');
       push();
       translate(this.offsetX,0);
       this.chordLength=sqrt(this.size**2-(this.size-this.spacing*(this.currentIteration-1))**2);
@@ -480,12 +485,100 @@ class Star{
     }
     endShape(CLOSE);
     this.currentIteration += 1;
-    console.log(this.currentIteration);
     if (this.currentIteration >= 30) {
       this.currentIteration = 0;
     }
 }
 }
+
+class RadiateLines {
+  constructor(x,y,size){
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.currentIteration = 0;
+
+    this.lightest;
+    this.darkest;
+    this.lineCenter = 1;
+    this.stop;
+    this.p;
+  }
+
+  draw(colorRange,startSweep,nLines, trigger){
+    if (trigger) {
+      this.currentIteration = 1;
+    }
+    console.log(this.currentIteration);
+    this.p=this.currentIteration/nLines;
+    blendMode(LIGHTEST);
+    //set lightest and darkest color
+    this.lightest = color(colorRange[0]);
+    this.darkest = color(colorRange[2]);
+    stroke(color(lerpColor(this.lightest,this.darkest,this.p)));
+    strokeWeight(4);
+    noFill();
+    if (startSweep=='R'){
+      this.lineCenter=0;
+    }
+    else if (startSweep=='L'){
+      this.lineCenter=PI;
+    }
+    // start=lineCenter;
+    //set arc coordinates
+     if (this.currentIteration==1){
+       this.stop=this.lineCenter;
+     }
+     else if (stop<=this.lineCenter+TWO_PI){
+       this.stop+=2*PI/nLines;
+     }
+     else {
+       this.stop=this.lineCenter+TWO_PI;
+     }
+    arc(0, 0, this.size, this.size, this.lineCenter, this.stop,CHORD);
+    if (this.currentIteration > nLines){
+      this.currentIteration = 0;
+    }
+    this.currentIteration++;
+  }
+}
+
+class FillAcross {
+  constructor(x, y, size){
+    this.x = x;
+    this.y = y;
+    this.size = size;
+
+    this.incr = PI/32;
+    this.start;
+    this.stop;
+  }
+  draw(colorRange,startPosition, trigger){
+    if(trigger){
+      if (startPosition=="R"){
+        this.start=-this.incr;
+        this.stop=this.incr;
+      }
+      else if (startPosition=="L"){
+        this.start=PI-this.incr;
+        this.stop=PI+this.incr;
+      }
+      else if (startPosition=="B"){
+        this.start=PI/2-this.incr;
+        this.stop=PI/2+this.incr;
+      }
+      else if (startPosition=="T"){
+        this.start=3*PI/2-this.incr;
+        this.stop=3*PI/2+this.incr;
+      }
+    }
+    fill(colorRange[1]);
+    this.start-=this.incr;
+    this.stop+=this.incr;
+    arc(0, 0, this.size, this.size, this.start, this.stop, OPEN);
+}
+}
+
 
 //function calls for animations with different parameters
 //uncomment once we can test with different sounds to trigger each one
