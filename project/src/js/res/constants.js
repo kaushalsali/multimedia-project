@@ -64,6 +64,14 @@ const SYNTH_CONFIGS = {
     }
 };
 
+const ANIM = {
+    LIGHTNING: "anim2",
+    STROBE: "strobe"
+};
+const ANIM_MAPPINGS = {
+    "C4": ANIM.LIGHTNING,
+    "D4": ANIM.STROBE
+}
 
 //---------------------------------------------------------------------------------
 const ANIM_MAPPING = {
@@ -85,3 +93,4 @@ const ANIM_MAPPING = {
   'D#5': 'null',
   'E5': 'null'
 }
+

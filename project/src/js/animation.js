@@ -19,7 +19,9 @@ class AnimationManager {
       this.trigger = false;
     }
 
-    switch(animNum){
+    draw(currentplaying){
+
+      let animNum = ANIM_MAPPINGS[currentPlaying];
       if (animNum != this.prevAnim) {
         this.trigger = true;
         this.prevAnim = animNum;
@@ -28,10 +30,10 @@ class AnimationManager {
         this.trigger = false;
 
       switch (animNum) {
-        case 'anim1':
+        case ANIM.LIGHTNING:
           this.lightning.draw();
           break;
-        case 'anim2':
+        case ANIM.STROBE:
           this.expandingCircle.draw(this.trigger);
           break;
         case 'anim3':
@@ -56,7 +58,7 @@ class AnimationManager {
     }
 
     draw(currentPlaying) {
-      this.switch(ANIM_MAPPING[currentPlaying]);
+      this.switch(ANIM_MAPPINGS[currentPlaying]);
     }
 }
 
