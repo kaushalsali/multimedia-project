@@ -52,34 +52,47 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('connected', (data) => {
     for (let node of Object.keys(serverNodeManager)) {
-      socket.emit('add-remote-node', {user: node});
-      for (let sample of serverNodeManager[node]) {
+      socket.emit('add-remote-node', {node: node, x: serverNodeManager[node].x, y: serverNodeManager[node].y, config: serverNodeManager[node].config});
+      for (let sample of serverNodeManager[node].samples) {
         socket.emit('add-sample-to-remote-node', {node: node, note: sample});
       }
     }
   });
 
   socket.on('add-user-node', (data) => {
-    if (!(data.user in serverNodeManager))
-      serverNodeManager[data.user] = [];
+    if (!(data.node in serverNodeManager))
+      serverNodeManager[data.node] = {x: data.x, y: data.y, config: data.config, samples: []};
     socket.broadcast.emit('add-remote-node', data);
-    
   });
 
   socket.on('add-sample-to-user-node', (data) => {
-    serverNodeManager[data.user].push(data.note);
+    serverNodeManager[data.node].samples.push(data.note);
     socket.broadcast.emit('add-sample-to-remote-node', data);
+  });
+
+  socket.on('change-user-synth', (data) => {
+    serverNodeManager[data.node].config = data.config;
+    socket.broadcast.emit('change-remote-synth', data);
   });
    
   socket.on('clear-user-node', (data) => {
-    serverNodeManager[data.user] = [];
+    serverNodeManager[data.node] = [];
     socket.broadcast.emit('clear-remote-node', data);
+  });
+
+  socket.on('delete-user-node', (data) => {
+    delete serverNodeManager[data.node];
+    socket.broadcast.emit('delete-remote-node', data);
   });
 
   socket.on('disconnect', function() {
      console.log("Client " + socket.id + " has disconnected");
-     delete serverNodeManager[socket.id];
-     socket.broadcast.emit('delete-remote-node', {user: socket.id});
+     for (let node of Object.keys(serverNodeManager)) {
+      if (node.includes(socket.id.toString())) {
+        socket.broadcast.emit('delete-remote-node', {node: node});
+        delete serverNodeManager[node];
+      }
+     }
   });
   }
 );
