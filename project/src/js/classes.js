@@ -188,6 +188,8 @@ class Node {
         this.sectorAngle = 2 * PI / this.numSamples;
         this.selected = false;
         this.direction = 1;
+
+        this.animation = new AnimationManager(x, y, size);
         this.synth = SynthFactory.createSynth(DEFAULT_SYNTH);
     }
 
@@ -307,9 +309,9 @@ class Node {
         // Inner gray circles
         strokeWeight(1);
         if (this.isSelected())
-            stroke(70);
+            stroke([70, 70, 70, 255]);
         else
-            stroke(10);
+            stroke([70, 70, 70, 0]);
         let numCircles = 10;
         let size = this.size  * 0.85;
         for (let i=1; i<numCircles; i++)
@@ -318,9 +320,9 @@ class Node {
         fill(255);
         textSize(32);
         text(this.id, 0,0);
-        // TODO: Integrate animations
-        // animationDraw(this.samples[this.currentSample]);
-        // test((this.size - 25), 1);
+        
+        // Draw animations
+        this.animation.draw(this.samples[this.currentSample]);
 
         pop();
     }
