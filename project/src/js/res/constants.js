@@ -32,7 +32,7 @@ const COLOR_YELLOWS=[[255,255,180],[255,255,69],[223,189,9]];
 const COLOR_ORANGEYELLOW=[[255,208,157],[255,165,69],[188,98,2]];
 const COLOR_ORANGE=[[255,183,148],[255,85,0],[153,56,0]];
 const COLOR_BLUES=[[163,186,255],[0,0,245],[0,2,103]];
-const COLOR_PURPLES=[[219,168,255],[134,0,230],[48,0,86]];
+const COLOR_PURPLES=[[219,168,255,255],[134,0,230, 255],[48,0,86, 255]];
 const COLOR_GREENS=[[201,255,201],[0,204,0],[0,71,0]];
 
 const COLOR_BLACK = [0, 0, 0];
@@ -67,7 +67,7 @@ const SYNTH_CONFIGS = {
 
 //---------------------------------------------------------------------------------
 const ANIM = {
-    LIGHTNING: "anim2",
+    LIGHTNING: "lightning",
     EMPTY_CIRCLE: "unfilled expanding cirecle",
     FADE_ORANGE: "circleFade with orange",
     ROT_STAR_GREEN: "green gradient rotating star",

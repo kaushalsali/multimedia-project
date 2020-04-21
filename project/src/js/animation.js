@@ -58,7 +58,7 @@ class AnimationManager {
           this.animationHandler['staticStar'].draw(this.size, this.size/2, 5, COLOR_ORANGE[2], this.trigger);
           break;
         case ANIM.RAD_PURPLE:
-          this.animationHandler['radiateLines'].draw(COLOR_PURPLES,'L', 30, this.trigger);
+          this.animationHandler['radiateLines'].draw(COLOR_PURPLES,'L', 6, this.trigger);
           break;
         case ANIM.ACROSS_PURPLE:
           this.animationHandler['fillAcross'].draw(COLOR_PURPLES,'B', this.trigger);
@@ -88,8 +88,6 @@ function staticLightning(strike, numStrikes, count, maxVal, rotateArray, lenArra
         count = count + 1;
       }
       else{
-        //console.log(this.strike);
-        //console.log(this.count);
         len = lenArray[(strike * maxVal) + count];
         rotate(rotateArray[(strike * maxVal) + count]);
         line(0, 0, 0, -len);
@@ -160,7 +158,6 @@ class Lightning {
         this.count = 0;
       }
       this.iteration += 1;
-      //console.log(this.rotateArray);
     }
     else if (this.iteration >= 10) {
       this.iteration = 0;
@@ -285,7 +282,6 @@ class CircleFade {
     if (eraseCircles==true && this.d>this.size && this.d/2<=this.size){
         if (fadeTo=="light"){
           fill(color(0,0,0));
-          console.log(this.d);
         }
         else{
           fill(color(255,255,255));
@@ -502,44 +498,46 @@ class RadiateLines {
     this.darkest;
     this.lineCenter = 1;
     this.stop;
-    this.p;
+    this.p = 1;
   }
 
   draw(colorRange,startSweep,nLines, trigger){
     if (trigger) {
-      this.currentIteration = 1;
-    }
-    console.log(this.currentIteration);
-    this.p=this.currentIteration/nLines;
-    blendMode(LIGHTEST);
-    //set lightest and darkest color
-    this.lightest = color(colorRange[0]);
-    this.darkest = color(colorRange[2]);
-    stroke(color(lerpColor(this.lightest,this.darkest,this.p)));
-    strokeWeight(4);
-    noFill();
-    if (startSweep=='R'){
-      this.lineCenter=0;
-    }
-    else if (startSweep=='L'){
-      this.lineCenter=PI;
-    }
-    // start=lineCenter;
-    //set arc coordinates
-     if (this.currentIteration==1){
-       this.stop=this.lineCenter;
-     }
-     else if (stop<=this.lineCenter+TWO_PI){
-       this.stop+=2*PI/nLines;
-     }
-     else {
-       this.stop=this.lineCenter+TWO_PI;
-     }
-    arc(0, 0, this.size, this.size, this.lineCenter, this.stop,CHORD);
-    if (this.currentIteration > nLines){
       this.currentIteration = 0;
+      this.lightest = color(colorRange[0]);
+      this.darkest = color(colorRange[2]);
+      blendMode(LIGHTEST);
+      if (startSweep=='R'){
+        this.lineCenter=0;
+      }
+      else if (startSweep=='L'){
+        this.lineCenter=PI;
+      }
+      this.stop = this.lineCenter;
     }
+    if (this.currentIteration % 5 == 0) {
+      this.p=this.currentIteration/(nLines);
+
+      // start=lineCenter;
+      //set arc coordinates
+      if (this.stop<=(this.lineCenter+TWO_PI)){
+        this.stop+=2*PI/nLines;
+      }
+      else if (this.stop > (this.lineCenter+TWO_PI)){
+        this.stop=this.lineCenter+TWO_PI;
+      }
+    }
+    stroke(color(lerpColor(this.lightest,this.darkest,this.p)));
+    strokeWeight(6);
+    noFill();
+    arc(0, 0, this.size, this.size, this.lineCenter, this.stop,CHORD);
+    circle(0, 0, this.size);
     this.currentIteration++;
+    if (this.currentIteration > nLines * 5){
+      this.currentIteration = 0;
+      this.stop = this.lineCenter;
+    }
+
   }
 }
 
