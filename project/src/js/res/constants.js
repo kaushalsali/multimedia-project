@@ -59,40 +59,53 @@ const COLOR_GREENS=[[201,255,201],[0,204,0],[0,71,0]];
 const COLOR_BLACK = [0, 0, 0];
 
 //---------------------------------------------------------------------------------
-// Synth configs
-
-
+// Synth mappings
+const SYNTH_MAPPINGS = {
+  'E. Piano': COLOR_GREENS,
+  'Tuba': COLOR_PURPLES,
+  'Bell': COLOR_ORANGEYELLOW,
+  'Ocarina': COLOR_REDS,
+  'Oboe': COLOR_YELLOWS,
+  'E. Bass': COLOR_BLUES
+}
 
 //---------------------------------------------------------------------------------
 const ANIM = {
     LIGHTNING: "lightning",
     EMPTY_CIRCLE: "unfilled expanding cirecle",
-    FADE_ORANGE: "circleFade with orange",
-    ROT_STAR_GREEN: "green gradient rotating star",
-    STROBE_BLUE: "blue circleStrobe",
-    SPIRAL_BLUE: "blue spiral",
-    VERT_PURPLE: "purple vertical lines",
-    STATIC_STAR_ORANGE: "orange static star",
-    RAD_PURPLE: "purple radiateLines",
-    ACROSS_PURPLE: "fill Across"
+    FADE: "circleFade",
+    ROT_STAR_FIVE: "gradient rotating 5 point star",
+    ROT_STAR_NINE: "gradient rotating 9 point star",
+    STROBE: "circleStrobe",
+    SPIRAL_TWO: "spiral two",
+    SPIRAL_ONE: "spiral one",
+    VERT_RL: "vertical lines right to left",
+    VERT_LR: "vertical lines left to right",
+    STATIC_STAR_FIVE: "static star with 5 points",
+    STATIC_STAR_NINE: "static star with 9 points",
+    RAD: "radiateLines",
+    ACROSS_B: "fill Across from B",
+    ACROSS_R: "fill Across from R",
+    ACROSS_T: "fill Across from T",
+    ACROSS_L: "fill Across from L"
 };
 
 const ANIM_MAPPINGS = {
   'C4': ANIM.LIGHTNING,
   'C#4': ANIM.EMPTY_CIRCLE,
-  'D4': ANIM.FADE_ORANGE,
-  'D#4': ANIM.ROT_STAR_GREEN,
-  'E4': ANIM.STROBE_BLUE,
-  'F4': ANIM.SPIRAL_BLUE,
-  'F#4': ANIM.VERT_PURPLE,
-  'G4': ANIM.STATIC_STAR_ORANGE,
-  'G#4': ANIM.RAD_PURPLE,
-  'A4': ANIM.ACROSS_PURPLE,
-  'A#4': 'null',
-  'B4': 'null',
-  'C5': 'null',
-  'C#5': 'null',
-  'D5': 'null',
-  'D#5': 'null',
-  'E5': 'null'
+  'D4': ANIM.ACROSS_T,
+  'D#4': ANIM.ROT_STAR_FIVE,
+  'E4': ANIM.STROBE,
+  'F4': ANIM.SPIRAL_ONE,
+  'F#4': ANIM.VERT_RL,
+  'G4': ANIM.STATIC_STAR_FIVE,
+  'G#4': ANIM.RAD,
+  'A4': ANIM.ACROSS_B,
+  'A#4': ANIM.SPIRAL_TWO,
+  'B4': ANIM.VERT_LR,
+  'C5': ANIM.LIGHTNING,
+  'C#5': ANIM.ACROSS_R,
+  'D5': ANIM.STATIC_STAR_NINE,
+  'D#5': ANIM.ROT_STAR_NINE,
+  'E5': ANIM.FADE
 }

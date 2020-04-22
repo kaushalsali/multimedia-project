@@ -320,9 +320,9 @@ class Node {
         fill(255);
         textSize(32);
         text(this.id, 0,0);
-        
+
         // Draw animations
-        this.animation.draw(this.samples[this.currentSample]);
+        this.animation.draw(this.samples[this.currentSample], this.getSynthName());
 
         pop();
     }
