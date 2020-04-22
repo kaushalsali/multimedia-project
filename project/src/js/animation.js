@@ -21,9 +21,12 @@ class AnimationManager {
 
       this.prevAnim;
       this.trigger = false;
+      this.color;
     }
 
-    draw(currentPlaying){
+    draw(currentPlaying, synthName){
+      this.color = SYNTH_MAPPINGS[synthName];
+
       let currentAnim = ANIM_MAPPINGS[currentPlaying];
       if (currentAnim != this.prevAnim) {
         this.trigger = true;
@@ -34,34 +37,55 @@ class AnimationManager {
 
       switch (currentAnim) {
         case ANIM.LIGHTNING:
-          this.animationHandler['lightning'].draw();
+          this.animationHandler['lightning'].draw(this.color[0]);
           break;
         case ANIM.EMPTY_CIRCLE:
-          this.animationHandler['expandingCircle'].draw(this.trigger);
+          this.animationHandler['expandingCircle'].draw(this.trigger, this.color[2]);
           break;
-        case ANIM.FADE_ORANGE:
-          this.animationHandler['circleFade'].draw("light", true, COLOR_ORANGE, this.trigger);
+        case ANIM.FADE:
+          this.animationHandler['circleFade'].draw("dark", true, this.color, this.trigger);
           break;
-        case ANIM.ROT_STAR_GREEN:
-          this.animationHandler['starRotate'].draw(5, -20, COLOR_GREENS, this.trigger);
+        case ANIM.ROT_STAR_FIVE:
+          this.animationHandler['starRotate'].draw(5, -20, this.color, this.trigger);
           break;
-        case ANIM.STROBE_BLUE:
-          this.animationHandler['circleStrobe'].draw(COLOR_BLUES[1], this.trigger);
+        case ANIM.ROT_STAR_NINE:
+          this.animationHandler['starRotate'].draw(9, -20, this.color, this.trigger);
           break;
-        case ANIM.SPIRAL_BLUE:
-          this.animationHandler['spiral'].draw(2, COLOR_BLUES[1], this.trigger);
+        case ANIM.STROBE:
+          this.animationHandler['circleStrobe'].draw(this.color[1], this.trigger);
           break;
-        case ANIM.VERT_PURPLE:
-          this.animationHandler['vertLines'].draw(32,COLOR_PURPLES,"RL", this.trigger);
+        case ANIM.SPIRAL_TWO:
+          this.animationHandler['spiral'].draw(2, this.color[1], this.trigger);
           break;
-        case ANIM.STATIC_STAR_ORANGE:
-          this.animationHandler['staticStar'].draw(this.size, this.size/2, 5, COLOR_ORANGE[2], this.trigger);
+        case ANIM.SPIRAL_ONE:
+          this.animationHandler['spiral'].draw(5, this.color[1], this.trigger);
           break;
-        case ANIM.RAD_PURPLE:
-          this.animationHandler['radiateLines'].draw(COLOR_PURPLES,'L', 6, this.trigger);
+        case ANIM.VERT_RL:
+          this.animationHandler['vertLines'].draw(32,this.color,"RL", this.trigger);
           break;
-        case ANIM.ACROSS_PURPLE:
-          this.animationHandler['fillAcross'].draw(COLOR_PURPLES,'B', this.trigger);
+        case ANIM.VERT_LR:
+          this.animationHandler['vertLines'].draw(32,this.color,"LR", this.trigger);
+          break;
+        case ANIM.STATIC_STAR_FIVE:
+          this.animationHandler['staticStar'].draw(this.size, this.size/2, 5, this.color[2], this.trigger);
+          break;
+        case ANIM.STATIC_STAR_NINE:
+          this.animationHandler['staticStar'].draw(this.size, this.size/2, 9, this.color[2], this.trigger);
+          break;
+        case ANIM.RAD:
+          this.animationHandler['radiateLines'].draw(this.color,'L', 6, this.trigger);
+          break;
+        case ANIM.ACROSS_B:
+          this.animationHandler['fillAcross'].draw(this.color,'B', this.trigger);
+          break;
+        case ANIM.ACROSS_T:
+          this.animationHandler['fillAcross'].draw(this.color,'T', this.trigger);
+          break;
+        case ANIM.ACROSS_R:
+          this.animationHandler['fillAcross'].draw(this.color,'R', this.trigger);
+          break;
+        case ANIM.ACROSS_L:
+          this.animationHandler['fillAcross'].draw(this.color,'B', this.trigger);
           break;
       }
     }
@@ -71,7 +95,7 @@ class AnimationManager {
 
 // ---------------------------------------------------------------
 // ---------------------------------------------------------------
-function staticLightning(strike, numStrikes, count, maxVal, rotateArray, lenArray) {
+function staticLightning(strike, numStrikes, count, maxVal, rotateArray, lenArray, colorRange) {
   for (strike = 0; strike < numStrikes; strike++){
     // For each strike, return to the center
     pop();
@@ -82,7 +106,7 @@ function staticLightning(strike, numStrikes, count, maxVal, rotateArray, lenArra
         rotate(rotateArray[strike]);
         len = lenArray[strike];
         line(0, 0, 0, -len);
-        stroke([255, 255, 255, 255]);
+        stroke(colorRange);
         strokeWeight(2);
         translate(0, -len);
         count = count + 1;
@@ -91,7 +115,7 @@ function staticLightning(strike, numStrikes, count, maxVal, rotateArray, lenArra
         len = lenArray[(strike * maxVal) + count];
         rotate(rotateArray[(strike * maxVal) + count]);
         line(0, 0, 0, -len);
-        stroke([255, 255, 255, (255 * ((maxVal-count)/maxVal))]);
+        stroke([colorRange[0], colorRange[1], colorRange[2], (255 * ((maxVal-count)/maxVal))]);
         strokeWeight(4);
         translate(0, -len);
         count = count + 1;
@@ -118,7 +142,7 @@ class Lightning {
     this.rotateArray = [];
   }
 
-  draw(){
+  draw(colorRange){
     push();
     if (this.iteration == 0) {
       for (this.strike = 0; this.strike < this.numStrikes; this.strike++) {
@@ -137,7 +161,7 @@ class Lightning {
             this.len = random(3, 15);
             this.lenArray.push(this.len);
             line(0, 0, 0, -this.len);
-            stroke([255, 255, 255, 255]);
+            stroke(colorRange);
             strokeWeight(2);
             translate(0, -this.len);
             this.count = this.count + 1;
@@ -161,11 +185,11 @@ class Lightning {
     }
     else if (this.iteration >= 10) {
       this.iteration = 0;
-      staticLightning(this.strike, this.numStrikes, this.count, this.maxVal, this.rotateArray, this.lenArray);
+      staticLightning(this.strike, this.numStrikes, this.count, this.maxVal, this.rotateArray, this.lenArray, colorRange);
     }
     else {
       this.iteration += 1;
-      staticLightning(this.strike, this.numStrikes, this.count, this.maxVal, this.rotateArray, this.lenArray);
+      staticLightning(this.strike, this.numStrikes, this.count, this.maxVal, this.rotateArray, this.lenArray, colorRange);
     }
   pop();
   }
@@ -180,13 +204,13 @@ class ExpandingCircle {
     this.radiusGrowth = 1;
   }
 
-  draw(trigger) {
+  draw(trigger, colorRange) {
     if(trigger){
       this.radiusGrowth = 1;
     }
-    stroke(COLOR_ANIM_LIGHTNING);
-    strokeWeight(2);
-    fill([0, 0, 0, 0]);
+    stroke(colorRange);
+    strokeWeight(4);
+    noFill();
     circle(0, 0, (5 + this.radiusGrowth));
     this.radiusGrowth += this.speed;
     if (this.radiusGrowth >= this.maxRadius)
@@ -246,22 +270,23 @@ class CircleFade {
     this.p = 1;
     this.lightest;
     this.darkest;
+    this.i = 0;
   }
 
   draw(fadeTo,eraseCircles,colorRange, trigger) {
     if (trigger) {
       this.d = 2;
+      this.lightest = color(colorRange[0]);
+      this.darkest = color(colorRange[2]);
+      this.dIncr=ceil((this.size/this.nCircles));
+      this.i = 0;
     }
     push();
-    //set lightest and darkest color
-    this.lightest = color(colorRange[0]);
-    this.darkest = color(colorRange[2]);
-
     strokeWeight(2);
     blendMode(LIGHTEST);
     //num pixels to increment diameter
-    this.dIncr=ceil((this.size - (frameCount%30))/this.nCircles);
     this.d+=this.dIncr;
+    this.p = (this.nCircles-this.i)/this.nCircles;
     //set color between lightest and darkest
     //this.p=(this.nCircles-this.d)/this.nCircles;
     if (this.d<=this.size){
@@ -280,19 +305,27 @@ class CircleFade {
     }
 
     if (eraseCircles==true && this.d>this.size && this.d/2<=this.size){
-        if (fadeTo=="light"){
-          fill(color(0,0,0));
-        }
-        else{
-          fill(color(255,255,255));
-        }
-        circle(0,0,this.d-this.size);
+      if (fadeTo=="light"){
+        fill(color(lerpColor(this.lightest,this.darkest,this.p)));
+        stroke(color(lerpColor(this.lightest,this.darkest,this.p)));
+      }
+      else {
+        fill(color(lerpColor(this.lightest,this.darkest,1-this.p)));
+        stroke(color(lerpColor(this.lightest,this.darkest,1-this.p)));
+      }
+      circle(0, 0,this.size);
+
+      fill(color([100, 100, 100]));
+      stroke(color([70, 70, 70]));
+      circle(0,0,this.d-this.size);
     }
 
     if (this.d >= this.size * 2){
       this.d = 2;
+      this.i = 0;
     }
     pop();
+    this.i ++;
   }
 }
 
@@ -462,10 +495,12 @@ class Star{
   draw(radius1, radius2, nPoints, c, trigger) {
     if (trigger) {
       this.currentIteration = 0;
+      this.angle = TWO_PI / nPoints;
+      this.halfAngle = this.angle / 2.0;
     }
-    this.angle = TWO_PI / nPoints;
-    this.halfAngle = this.angle / 2.0;
+    push();
     beginShape();
+    stroke(c);
     fill(c);
     if(this.currentIteration == 0) {
       this.rotation = random(-10, 10);
@@ -484,6 +519,7 @@ class Star{
     if (this.currentIteration >= 30) {
       this.currentIteration = 0;
     }
+    pop();
 }
 }
 
