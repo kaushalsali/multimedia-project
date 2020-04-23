@@ -61,7 +61,7 @@ function setup() {
     // Create Nodes
     nodeManager = new NodeManager();
 
-    while (socket.id === null) {
+    while (socket.id === undefined) {
         setTimeout(function() {
             console.log("Waiting for server...");
 
@@ -70,15 +70,17 @@ function setup() {
 
     let id = socket.id.concat(__temp_id++);
 
-    addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
-    let node = nodeManager.getNode(id);
-    nodeManager.setSelectedNode(id);
-    socket.emit('add-user-node', {node: id, x:node.x, y: node.y, config: node.getSynthName()});
-
     // Setup UI
     setupUI();
 
     socket.emit('connected');
+
+    setTimeout(function() {
+        addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
+        let node = nodeManager.getNode(id);
+        nodeManager.setSelectedNode(id);
+        socket.emit('add-user-node', {node: id, x:node.x, y: node.y, config: node.getSynthName()});
+    }, 500);
 
 }
 
@@ -205,7 +207,7 @@ function addNewNodeToViewAtRandom(id, type) {
 
         if (millis() - timeStart > timeLimit) {// If cant add within timelimit stop
             console.log('View Full. No more space.');
-            return null;
+            return -1;
         }
     }
 }
@@ -303,9 +305,11 @@ function handleClearNode() {
 
 function handleAddNode() {
     let id = socket.id.concat(__temp_id++);
-    addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
-    let node = nodeManager.getNode(id);
-    socket.emit('add-user-node', {node: id, x:node.x, y: node.y, config: node.getSynthName()});
+    let success = addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
+    if (success !== -1) {
+        let node = nodeManager.getNode(id);
+        socket.emit('add-user-node', {node: id, x:node.x, y: node.y, config: node.getSynthName()});
+    }
 }
 
 function handleRemoveNode() {
