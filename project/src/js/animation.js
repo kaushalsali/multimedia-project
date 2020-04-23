@@ -40,7 +40,7 @@ class AnimationManager {
           this.animationHandler['lightning'].draw(this.color[0]);
           break;
         case ANIM.EMPTY_CIRCLE:
-          this.animationHandler['expandingCircle'].draw(this.trigger, this.color[2]);
+          this.animationHandler['expandingCircle'].draw(this.trigger, this.color[0]);
           break;
         case ANIM.FADE:
           this.animationHandler['circleFade'].draw("dark", true, this.color, this.trigger);
