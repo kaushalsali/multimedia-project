@@ -60,29 +60,45 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('add-user-node', (data) => {
-    if (!(data.node in serverNodeManager))
+    if (!(data.node in serverNodeManager)) {
       serverNodeManager[data.node] = {x: data.x, y: data.y, config: data.config, samples: []};
-    socket.broadcast.emit('add-remote-node', data);
+      console.log(serverNodeManager);
+      socket.broadcast.emit('add-remote-node', data);
+    }
   });
 
   socket.on('add-sample-to-user-node', (data) => {
-    serverNodeManager[data.node].samples.push(data.note);
-    socket.broadcast.emit('add-sample-to-remote-node', data);
+    if (data.node in serverNodeManager) {
+      if (serverNodeManager[data.node].samples != undefined) {
+        serverNodeManager[data.node].samples.push(data.note);
+        console.log(serverNodeManager);
+        socket.broadcast.emit('add-sample-to-remote-node', data);
+      }
+    }
   });
 
   socket.on('change-user-synth', (data) => {
-    serverNodeManager[data.node].config = data.config;
-    socket.broadcast.emit('change-remote-synth', data);
+    if(data.node in serverNodeManager) {
+      serverNodeManager[data.node].config = data.config;
+      console.log(serverNodeManager);
+      socket.broadcast.emit('change-remote-synth', data);
+    }
   });
    
   socket.on('clear-user-node', (data) => {
-    serverNodeManager[data.node] = [];
-    socket.broadcast.emit('clear-remote-node', data);
+    if (data.node in serverNodeManager) {
+      serverNodeManager[data.node].samples = [];
+      console.log(serverNodeManager);
+      socket.broadcast.emit('clear-remote-node', data);
+    }
   });
 
   socket.on('delete-user-node', (data) => {
-    delete serverNodeManager[data.node];
-    socket.broadcast.emit('delete-remote-node', data);
+    if (data.node in serverNodeManager) {
+      delete serverNodeManager[data.node];
+      console.log(serverNodeManager);
+      socket.broadcast.emit('delete-remote-node', data);
+    }
   });
 
   socket.on('disconnect', function() {
@@ -91,6 +107,7 @@ io.sockets.on('connection', function (socket) {
       if (node.includes(socket.id.toString())) {
         socket.broadcast.emit('delete-remote-node', {node: node});
         delete serverNodeManager[node];
+        console.log(serverNodeManager);
       }
      }
   });
