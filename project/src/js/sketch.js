@@ -1,7 +1,22 @@
+$(window).on('load',function(){
+    $('#startup-modal').modal('show');
+});
+
+$(function() {
+    $('#btn-modal-start').on('click', async () => {
+        await Tone.start();
+        console.log('audio is ready');
+
+        setup2();
+
+    });
+});
+
 
 // Socket
 let socket = io.connect();
 let userNodeCount = 0;
+
 
 // State
 let isPlaying = false;
@@ -37,6 +52,7 @@ let viewHeight;
 
 // Node parameters
 let nodeManager = null;
+
 
 
 function setup() {
@@ -244,7 +260,6 @@ function setupTone() {
 
 
 function setupUI() {
-
     let btnWidth = 180;
     let btnHeight = 35;
     let btnSpacing = 100;
@@ -279,15 +294,14 @@ function setupUI() {
         selSynth.option(instrument);
     selSynth.selected(0);
 
-
     btnPlay = createButton("Play");
     btnPlay.size(btnWidth, btnHeight);
     btnPlay.position((width/2 - btnWidth/2), height - 170);
     btnPlay.addClass("myButton");
     btnPlay.mousePressed(handleTogglePlay);
     btnPlay.html("Play");
-
 }
+
 function handleClearNode() {
     socket.emit('clear-user-node', {node: nodeManager.getSelectedNodeId()});
     nodeManager.clearUserNode(nodeManager.getSelectedNodeId());

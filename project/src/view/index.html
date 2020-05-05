@@ -3,15 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1">-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="./src/style/style.css">
     <script language="javascript" type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/p5.min.js"></script>
     <script src="./src/libs/tone.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<!--	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>-->
 </head>
 
 <body>
+    <div class="container">
+        <!-- Trigger the modal with a button -->
+<!--        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#startup-modal">Open Modal</button>-->
+        <!-- Modal -->
+        <div class="modal fade" id="startup-modal" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content text-center">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Start App</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Some text</p>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-center">
+                            <button id="#btn-modal-start"  type="button" class="btn btn-default myButton" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="canvas-container"></div>
 </body>
 
