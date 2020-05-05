@@ -1,7 +1,7 @@
 
 // Socket
 let socket = io.connect();
-__temp_id = 0;
+let userNodeCount = 0;
 
 // State
 let isPlaying = false;
@@ -64,7 +64,7 @@ function setup() {
     nodeManager = new NodeManager();
 
     socket.on('connect', () => {
-        let id = socket.id.concat(__temp_id++);
+        let id = socket.id.concat(userNodeCount++);
         socket.emit('connected');
         addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
         let node = nodeManager.getNode(id);
@@ -294,7 +294,7 @@ function handleClearNode() {
 }
 
 function handleAddNode() {
-    let id = socket.id.concat(__temp_id++);
+    let id = socket.id.concat(userNodeCount++);
     let success = addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
     if (success !== -1) {
         let node = nodeManager.getNode(id);
