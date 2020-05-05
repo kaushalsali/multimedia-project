@@ -54,6 +54,8 @@ function setup() {
     viewWidth = view_max_x_offset - view_min_x_offset + width;
     viewHeight = view_max_y_offset - view_min_y_offset + height;
 
+    // Setup UI
+    setupUI();
 
     // Tone Setup
     setupTone();
@@ -61,17 +63,9 @@ function setup() {
     // Create Nodes
     nodeManager = new NodeManager();
 
-    console.log("socket", socket.id);
-
     socket.on('connect', () => {
-
         let id = socket.id.concat(__temp_id++);
-
-        // Setup UI
-        setupUI();
-
         socket.emit('connected');
-
         addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
         let node = nodeManager.getNode(id);
         nodeManager.setSelectedNode(id);
