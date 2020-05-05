@@ -5,7 +5,7 @@ class NodeManager {
         this.nodes = {};
         this.userNodeIds = [];
         this.remoteNodeIds = [];
-        this.selectedNodeId = 0;
+        this.selectedNodeId = "";
     }
 
     hasNode(nodeId) {
@@ -135,7 +135,7 @@ class NodeManager {
     }
 
     setRemoteNodeSynth(nodeId, synthName) {
-        if (this.userNodeIds.includes(nodeId.toString()))
+        if (this.remoteNodeIds.includes(nodeId.toString()))
             this.nodes[nodeId].changeSynth(synthName);
     }
 

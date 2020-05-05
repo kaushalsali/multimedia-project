@@ -1,4 +1,8 @@
 
+// Socket
+let socket = io.connect();
+let userNodeCount = 0;
+
 // State
 let isPlaying = false;
 
@@ -35,7 +39,6 @@ let viewHeight;
 let nodeManager = null;
 
 
-
 function setup() {
     // Setup canvas
     let myCanvas = createCanvas(100,100);
@@ -51,20 +54,23 @@ function setup() {
     viewWidth = view_max_x_offset - view_min_x_offset + width;
     viewHeight = view_max_y_offset - view_min_y_offset + height;
 
+    // Setup UI
+    setupUI();
 
     // Tone Setup
     setupTone();
 
     // Create Nodes
     nodeManager = new NodeManager();
-    let pos = addNewNodeToViewAtRandom(__temp_id++, NODE_TYPES.USER);
 
-    // addMultipleNodes(1, NODE_TYPES.USER);
-    //addMultipleNodes(TEMP_NUM_NODES, NODE_TYPES.REMOTE);
-
-
-    // Setup UI
-    setupUI();
+    socket.on('connect', () => {
+        let id = socket.id.concat(userNodeCount++);
+        socket.emit('connected');
+        addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
+        let node = nodeManager.getNode(id);
+        nodeManager.setSelectedNode(id);
+        socket.emit('add-user-node', {node: id, x:node.x, y: node.y, config: node.getSynthName()});
+    });
 
 }
 
@@ -136,15 +142,6 @@ function updateViewTranslationParameters() {
 }
 
 
-let __temp_id = 0; //TODO: Properly set id later.
-
-function addMultipleNodes(numNodes, type) { //TODO: this is a temporary function
-    for (let i=0; i<numNodes; i++) {
-        addNewNodeToViewAtRandom(__temp_id++, type);
-    }
-}
-
-
 /*
  * Creates and adds a node to the view such that it doesn't overlap with existing nodes.
  */
@@ -200,7 +197,7 @@ function addNewNodeToViewAtRandom(id, type) {
 
         if (millis() - timeStart > timeLimit) {// If cant add within timelimit stop
             console.log('View Full. No more space.');
-            return null;
+            return -1;
         }
     }
 }
@@ -291,16 +288,22 @@ function setupUI() {
     btnPlay.html("Play");
 
 }
-
 function handleClearNode() {
+    socket.emit('clear-user-node', {node: nodeManager.getSelectedNodeId()});
     nodeManager.clearUserNode(nodeManager.getSelectedNodeId());
 }
 
 function handleAddNode() {
-    addNewNodeToViewAtRandom(__temp_id++, NODE_TYPES.USER);
+    let id = socket.id.concat(userNodeCount++);
+    let success = addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
+    if (success !== -1) {
+        let node = nodeManager.getNode(id);
+        socket.emit('add-user-node', {node: id, x:node.x, y: node.y, config: node.getSynthName()});
+    }
 }
 
 function handleRemoveNode() {
+    socket.emit('delete-user-node', {node: nodeManager.getSelectedNodeId()});
     nodeManager.deleteUserNode(nodeManager.getSelectedNodeId());
 }
 
@@ -309,6 +312,7 @@ function handleChangeSynth() {
     let id = nodeManager.getSelectedNodeId();
     nodeManager.setUserNodeSynth(id, selSynth.value());
     nodeManager.connectNode(id, nodeConnectionPoint);
+    socket.emit('change-user-synth', {node: id, config: selSynth.value()});
 }
 
 function handleTogglePlay() {
@@ -352,67 +356,77 @@ function drawViewRect() {
 
 document.addEventListener('keydown', function(event) {
 
-    // if (event.keyCode === 80) {     // P - START TONE.JS
-    //     Tone.start();
-    //     console.log('Tone started');
-    //     Tone.Master.volume = -10;
-    // }
-
-
     if (event.keyCode === 65) { // A
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "C4"});
     }
     else if (event.keyCode === 83) { // S
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "D4"});
     }
     else if (event.keyCode === 68) { // D
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"E4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "E4"});
     }
     else if (event.keyCode === 70) { // F
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"F4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "F4"});
     }
     else if (event.keyCode === 71) { // G
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"G4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "G4"});
     }
     else if (event.keyCode === 72) { // H
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"A4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "A4"});
     }
     else if (event.keyCode === 74) { // J
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"B4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "B4"});
     }
     else if (event.keyCode === 75) { // K
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C5");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "C5"});
     }
     else if (event.keyCode === 76) { // L
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D5");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "D5"});
     }
     else if (event.keyCode === 186) { // ;
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"E5");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "E5"});
     }
     else if (event.keyCode === 87) { // W
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C#4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "C#4"});
     }
     else if (event.keyCode === 69) { // E
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D#4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "D#4"});
     }
     else if (event.keyCode === 84) { // T
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"F#4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "F#4"});
     }
     else if (event.keyCode === 89) { // Y
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"G#4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "G#4"});
     }
     else if (event.keyCode === 85) { // U
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"A#4");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "A#4"});
     }
     else if (event.keyCode === 79) { // O
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"C#5");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "C#5"});
     }
     else if (event.keyCode === 80) { // P
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),"D#5");
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: "D#5"});
     }
     else if (event.keyCode === 32) { // SPACE
-
         nodeManager.addSampleToUserNode(nodeManager.getSelectedNodeId(),null); // Rest
+        socket.emit('add-sample-to-user-node', {node: nodeManager.getSelectedNodeId(), note: null});
     }
 
     if (!isPlaying) { // Not playing //TODO: This functionality is not necessary
@@ -424,6 +438,30 @@ document.addEventListener('keydown', function(event) {
         }
     }
 });
+
+socket.on('add-remote-node', (data) => {
+    addNewNodeToViewAt(data.node, NODE_TYPES.REMOTE, data.x, data.y);
+    nodeManager.setRemoteNodeSynth(data.node, data.config);
+    nodeManager.connectNode(data.node, nodeConnectionPoint);
+});
+
+socket.on('clear-remote-node', (data) => {
+  nodeManager.clearRemoteNode(data.node);
+});
+
+socket.on('add-sample-to-remote-node', (data) => {
+    nodeManager.addSampleToRemoteNode(data.node, data.note);
+});
+
+socket.on('change-remote-synth', (data) => {
+    nodeManager.setRemoteNodeSynth(data.node, data.config);
+    nodeManager.connectNode(data.node, nodeConnectionPoint);
+});
+
+socket.on('delete-remote-node', (data) => {
+    nodeManager.deleteRemoteNode(data.node);
+});
+
 
 
 
