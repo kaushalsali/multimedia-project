@@ -1,6 +1,6 @@
 
 // Socket
-let socket = io();
+let socket = io.connect();
 __temp_id = 0;
 
 // State
@@ -61,26 +61,22 @@ function setup() {
     // Create Nodes
     nodeManager = new NodeManager();
 
-    while (socket.id === undefined) {
-        setTimeout(function() {
-            console.log("Waiting for server...");
+    console.log("socket", socket.id);
 
-        }, 500);
-    }
+    socket.on('connect', () => {
 
-    let id = socket.id.concat(__temp_id++);
+        let id = socket.id.concat(__temp_id++);
 
-    // Setup UI
-    setupUI();
+        // Setup UI
+        setupUI();
 
-    socket.emit('connected');
+        socket.emit('connected');
 
-    setTimeout(function() {
         addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
         let node = nodeManager.getNode(id);
         nodeManager.setSelectedNode(id);
         socket.emit('add-user-node', {node: id, x:node.x, y: node.y, config: node.getSynthName()});
-    }, 500);
+    });
 
 }
 
