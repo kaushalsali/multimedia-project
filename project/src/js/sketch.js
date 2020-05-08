@@ -5,6 +5,12 @@ $(window).on('load',function(){
 $(function() {
     $('#btn-modal-start').click(() => {
         Tone.start();
+        userName = $('#txt-username').val();
+        let id = socket.id.concat(userNodeCount++);
+        addNewNodeToViewAtRandom(id, userName, NODE_TYPES.USER);
+        let node = nodeManager.getNode(id);
+        nodeManager.setSelectedNode(id);
+        socket.emit('add-user-node', {node: id, name: userName, x:node.x, y: node.y, config: node.getSynthName()});
         isStarted = true; // Start interaction handling and drawing.
     });
 });
@@ -13,6 +19,7 @@ $(function() {
 // Socket
 let socket = io.connect();
 let userNodeCount = 0;
+let userName = "";
 
 // State
 let isStarted = false;
@@ -76,12 +83,7 @@ function setup() {
     nodeManager = new NodeManager();
 
     socket.on('connect', () => {
-        let id = socket.id.concat(userNodeCount++);
         socket.emit('connected');
-        addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
-        let node = nodeManager.getNode(id);
-        nodeManager.setSelectedNode(id);
-        socket.emit('add-user-node', {node: id, x:node.x, y: node.y, config: node.getSynthName()});
     });
 
 }
@@ -162,12 +164,12 @@ function updateViewTranslationParameters() {
 /*
  * Creates and adds a node to the view such that it doesn't overlap with existing nodes.
  */
-function addNewNodeToViewAt(id, type, x, y) {
+function addNewNodeToViewAt(id, name, type, x, y) {
     let created = false;
     if (type === NODE_TYPES.USER)
-        created = nodeManager.createUserNode(id, x, y, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+        created = nodeManager.createUserNode(id, name, x, y, NODE_SIZE, SYNTH_CONFIGS['Mid']);
     else if (type === NODE_TYPES.REMOTE)
-        created = nodeManager.createRemoteNode(id, x, y, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+        created = nodeManager.createRemoteNode(id, name, x, y, NODE_SIZE, SYNTH_CONFIGS['Mid']);
     if (created)
         nodeManager.connectNode(id, nodeConnectionPoint);
 }
@@ -175,7 +177,7 @@ function addNewNodeToViewAt(id, type, x, y) {
 /*
  * Creates and adds a node to the view such that it doesn't overlap with existing nodes.
  */
-function addNewNodeToViewAtRandom(id, type) {
+function addNewNodeToViewAtRandom(id, name, type) {
     let totalInterNodeDistance = NODE_SIZE * 2 + MIN_INTER_NODE_DIST;
     let nodes = nodeManager.getAllNodes();
     let newX, newY;
@@ -202,9 +204,9 @@ function addNewNodeToViewAtRandom(id, type) {
             added = true;
             let created = false;
             if (type === NODE_TYPES.USER)
-                created = nodeManager.createUserNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+                created = nodeManager.createUserNode(id, name, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']);
             else if (type === NODE_TYPES.REMOTE)
-                created = nodeManager.createRemoteNode(id, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']);
+                created = nodeManager.createRemoteNode(id, name, newX, newY, NODE_SIZE, SYNTH_CONFIGS['Mid']);
             if (created) {
                 nodeManager.connectNode(id, nodeConnectionPoint);
                 return {'x': newX, 'y': newY};
@@ -310,10 +312,10 @@ function handleClearNode() {
 
 function handleAddNode() {
     let id = socket.id.concat(userNodeCount++);
-    let success = addNewNodeToViewAtRandom(id, NODE_TYPES.USER);
+    let success = addNewNodeToViewAtRandom(id, userName, NODE_TYPES.USER);
     if (success !== -1) {
         let node = nodeManager.getNode(id);
-        socket.emit('add-user-node', {node: id, x:node.x, y: node.y, config: node.getSynthName()});
+        socket.emit('add-user-node', {node: id, name:userName, x:node.x, y: node.y, config: node.getSynthName()});
     }
 }
 
@@ -431,7 +433,7 @@ document.addEventListener('keydown', function(event) {
 });
 
 socket.on('add-remote-node', (data) => {
-    addNewNodeToViewAt(data.node, NODE_TYPES.REMOTE, data.x, data.y);
+    addNewNodeToViewAt(data.node, data.name, NODE_TYPES.REMOTE, data.x, data.y);
     nodeManager.setRemoteNodeSynth(data.node, data.config);
     nodeManager.connectNode(data.node, nodeConnectionPoint);
 });

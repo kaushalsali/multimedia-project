@@ -51,22 +51,22 @@ class NodeManager {
         return this.remoteNodeIds;
     }
 
-    createUserNode(nodeId, x, y, size, synth_config) {
+    createUserNode(nodeId, nodeName, x, y, size, synth_config) {
         if (this.userNodeIds.length < MAX_USER_NODES) {
-            return this._createNode(nodeId, NODE_TYPES.USER, x, y, size, synth_config);
+            return this._createNode(nodeId, nodeName, NODE_TYPES.USER, x, y, size, synth_config);
         }
         return false;
     }
 
-    createRemoteNode(nodeId, x, y, size, synth_config) {
-        return this._createNode(nodeId, NODE_TYPES.REMOTE, x, y, size, synth_config);
+    createRemoteNode(nodeId, nodeName, x, y, size, synth_config) {
+        return this._createNode(nodeId, nodeName, NODE_TYPES.REMOTE, x, y, size, synth_config);
     }
 
-    _createNode(nodeId, nodeType, x, y, size, synth_config) {
+    _createNode(nodeId, nodeName, nodeType, x, y, size, synth_config) {
         nodeId = nodeId.toString();
         if (this.getNumNodes() < MAX_TOTAL_NODES) {
             if (!(Object.keys(this.nodes).includes(nodeId))) {
-                this.nodes[nodeId] = new Node(nodeId, nodeType, x, y, size, synth_config);
+                this.nodes[nodeId] = new Node(nodeId, nodeName, nodeType, x, y, size, synth_config);
                 if (nodeType === NODE_TYPES.REMOTE)
                     this.remoteNodeIds.push(nodeId);
                 else if (nodeType === NODE_TYPES.USER)
@@ -176,8 +176,9 @@ class NodeManager {
 
 class Node {
 
-    constructor(id, type, x, y, size, synthConfig) {
+    constructor(id, name, type, x, y, size) {
         this.id = id;
+        this.name = name;
         this.type = type;
         this.x = x;
         this.y = y;
@@ -195,6 +196,14 @@ class Node {
 
     getId() {
         return this.id;
+    }
+
+    getName() {
+        return this.name;
+    }
+
+    setName(name) {
+        this.name = name;
     }
 
     getType() {
@@ -317,12 +326,13 @@ class Node {
         for (let i=1; i<numCircles; i++)
             ellipse(0, 0,  size - (size/numCircles)*i);
 
-        fill(255);
-        textSize(32);
-        text(this.id, 0,0);
-
         // Draw animations
         this.animation.draw(this.samples[this.currentSample], this.getSynthName());
+
+        // Draw username
+        fill(COLOR_NODE[this.type].DEFAULT_SAMPLE);
+        textSize(32);
+        text(this.name, 0, 0);
 
         pop();
     }

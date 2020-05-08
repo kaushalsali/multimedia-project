@@ -31,7 +31,11 @@
                     </div>
                     <div class="modal-footer">
                         <div class="text-center">
-                            <button id="btn-modal-start"  type="button" class="btn btn-default myButton" data-dismiss="modal">Close</button>
+                            <label for="txt-username">Username:</label>
+                            <input type="text" id="txt-username" value="Enter Username" onClick="this.setSelectionRange(0, this.value.length)"/>
+                        </div>
+                        <div class="text-center">
+                            <button id="btn-modal-start" type="button" class="btn btn-default myButton" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>

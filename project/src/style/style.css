@@ -90,12 +90,18 @@ body {
     right: 0;
     bottom: 0;
     left: 0;
-    height: 60px;
+    height: 100px;
     padding: 10px;
     border-top: 1px solid #ff5500;
 }
 
 
+input[type="text"] {
+    text-align: center;
+    border: 5px #ff5500;
+    background-color: #222222;
+    color: #ffa545;
+}
 /*------------------------*/
 /* Slider Style */
 
