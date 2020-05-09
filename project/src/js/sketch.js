@@ -3,6 +3,7 @@ $(window).on('load',function(){
 });
 
 $(function() {
+    $('#btn-modal-start').prop('disabled', true);
     $('#btn-modal-start').click(() => {
         Tone.start();
         userName = $('#txt-username').val();
@@ -84,6 +85,7 @@ function setup() {
 
     socket.on('connect', () => {
         socket.emit('connected');
+        $('#btn-modal-start').prop('disabled', false);
     });
 
 }
