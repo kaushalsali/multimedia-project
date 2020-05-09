@@ -1,9 +1,12 @@
 // View paramerters
+const WIDTH = 1920;
+const HEIGHT = 1080;
+
 const VIEW_TRANSLATION_SPEED = 10;
 const VIEW_TRANSLATION_MARGIN = 50;
 const VIEW_SCALE_FACTOR = 0.001;
 const VIEW_SCALE_MAX = 2;
-const VIEW_SCALE_MIN = 0.4;
+const VIEW_SCALE_MIN = 0.3;
 
 //---------------------------------------------------------------------------------
 // Node

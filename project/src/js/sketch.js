@@ -42,10 +42,10 @@ let selSynth;
 let btnPlay;
 
 // Global view parameters
-let view_max_x_offset = 1000;
-let view_min_x_offset = -1000;
-let view_max_y_offset = 1000;
-let view_min_y_offset = -1000;
+let view_max_x_offset = 0;
+let view_min_x_offset = -0;
+let view_max_y_offset = 0;
+let view_min_y_offset = -0;
 let viewOffsetX = 0;
 let viewOffsetY = 0;
 let viewScale = 1;
@@ -65,13 +65,15 @@ function setup() {
     myCanvas.parent('canvas-container');
     background(COLOR_BACKGROUND);
 
-    // Set view limits
-    view_max_x_offset = width/2;
-    view_min_x_offset = -width/2;
-    view_max_y_offset = height/2;
-    view_min_y_offset = -height/2;
-    viewWidth = view_max_x_offset - view_min_x_offset + width;
-    viewHeight = view_max_y_offset - view_min_y_offset + height;
+    // View configuration
+    // view_max_x_offset = width/2;
+    // view_min_x_offset = -width/2;
+    // view_max_y_offset = height/2;
+    // view_min_y_offset = -height/2;
+    viewWidth = WIDTH + (view_max_x_offset - view_min_x_offset);
+    viewHeight = HEIGHT + (view_max_y_offset - view_min_y_offset);
+
+    viewScale = 0.5;
 
     // Setup UI
     setupUI();
@@ -99,14 +101,18 @@ function draw() {
     translate(-width/2, -height/2);
 
     // Translate view
-    updateViewTranslationParameters();
+    //updateViewTranslationParameters();
 
     // Draw
     push();
-    translate(viewOffsetX, viewOffsetY);
+
+    //translate(viewOffsetX, viewOffsetY);
     drawViewRect();
     drawGrid();
+
+    translate(width/2, height/2);
     nodeManager.drawNodes();
+    translate(-width/2, -height/2);
     pop();
 
 }
@@ -187,10 +193,9 @@ function addNewNodeToViewAtRandom(id, name, type) {
     let timeLimit = 500;
     let timeStart = millis();
 
-    while (!added) { // Possibility of infinite loop !!
-
-        newX = random(NODE_SIZE, viewWidth - NODE_SIZE) - width/2;
-        newY = random(NODE_SIZE, viewHeight - NODE_SIZE) - height/2;
+    while (!added) {
+        newX = (random(NODE_SIZE, viewWidth - NODE_SIZE) - WIDTH/2);
+        newY = (random(NODE_SIZE, viewHeight - NODE_SIZE) - HEIGHT/2);
         // newX = width/2;
         // newY = height/2;
 
