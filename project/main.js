@@ -52,7 +52,7 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('connected', (data) => {
     for (let node of Object.keys(serverNodeManager)) {
-      socket.emit('add-remote-node', {node: node, x: serverNodeManager[node].x, y: serverNodeManager[node].y, config: serverNodeManager[node].config});
+      socket.emit('add-remote-node', {node: node, name: serverNodeManager[node].name, x: serverNodeManager[node].x, y: serverNodeManager[node].y, config: serverNodeManager[node].config});
       for (let sample of serverNodeManager[node].samples) {
         socket.emit('add-sample-to-remote-node', {node: node, note: sample});
       }
@@ -61,7 +61,7 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('add-user-node', (data) => {
     if (!(data.node in serverNodeManager)) {
-      serverNodeManager[data.node] = {x: data.x, y: data.y, config: data.config, samples: []};
+      serverNodeManager[data.node] = {name: data.name, x: data.x, y: data.y, config: data.config, samples: []};
       console.log(serverNodeManager);
       socket.broadcast.emit('add-remote-node', data);
     }
