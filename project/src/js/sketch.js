@@ -110,7 +110,6 @@ function draw() {
     drawGrid();
     nodeManager.drawNodes();
     pop();
-
 }
 
 // Overloads mousePressed of p5.
@@ -260,7 +259,6 @@ function setupTone() {
         nodeManager.stepAllNodes();
     }, "8n");
     Tone.Transport.bpm.value = 60;
-
 }
 
 
