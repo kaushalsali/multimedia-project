@@ -73,6 +73,7 @@ function setup() {
     view_min_y_offset = -height/2;
     viewWidth = view_max_x_offset - view_min_x_offset + width;
     viewHeight = view_max_y_offset - view_min_y_offset + height;
+    viewScale = 0.5;
 
     // Setup UI
     setupUI();
