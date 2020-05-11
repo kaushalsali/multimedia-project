@@ -107,7 +107,8 @@ function draw() {
     push();
     translate(viewOffsetX, viewOffsetY);
     drawViewRect();
-    drawGrid();
+//    drawGrid();
+
     nodeManager.drawNodes();
     pop();
 }
@@ -367,7 +368,7 @@ function drawViewRect() {
     translate(width/2, height/2);
     fill(COLOR_BACKGROUND_VIEW);
     rectMode(CENTER);
-    rect(0,0, viewWidth, viewHeight);
+    rect(0,0, viewWidth/viewScale, viewHeight/viewScale);
     translate(-width/2, -height/2);
 }
 
