@@ -269,28 +269,28 @@ function setupUI() {
 
     btnAddNode = createButton("Add Node");
     btnAddNode.size(btnWidth, btnHeight);
-    btnAddNode.position((width/2 - btnWidth/2) - btnSpacing * 3, height - 120);
+    btnAddNode.position((width/2 - btnWidth/2) - btnSpacing * 3, height - 50);
     btnAddNode.addClass("myButton");
     btnAddNode.mousePressed(handleAddNode);
     btnAddNode.html("Add Node");
 
     btnRemoveNode = createButton("Remove Node");
     btnRemoveNode.size(btnWidth, btnHeight);
-    btnRemoveNode.position((width/2 - btnWidth/2) - btnSpacing, height - 120);
+    btnRemoveNode.position((width/2 - btnWidth/2) - btnSpacing, height - 50);
     btnRemoveNode.addClass("myButton");
     btnRemoveNode.mousePressed(handleRemoveNode);
     btnRemoveNode.html("Remove Node");
 
     btnClear = createButton("Clear Node");
     btnClear.size(btnWidth, btnHeight);
-    btnClear.position((width/2 - btnWidth/2) + btnSpacing, height - 120);
+    btnClear.position((width/2 - btnWidth/2) + btnSpacing, height - 50);
     btnClear.addClass("myButton");
     btnClear.mousePressed(handleClearNode);
     btnClear.html("Clear Node");
 
     selSynth = createSelect(false);
     selSynth.size(btnWidth, btnHeight);
-    selSynth.position((width/2 - btnWidth/2) + btnSpacing * 3, height - 120);
+    selSynth.position((width/2 - btnWidth/2) + btnSpacing * 3, height - 50);
     selSynth.addClass("myButton");
     selSynth.changed(handleChangeSynth);
     for (let instrument in SYNTH_CONFIGS)
@@ -299,7 +299,7 @@ function setupUI() {
 
     btnPlay = createButton("Play");
     btnPlay.size(btnWidth, btnHeight);
-    btnPlay.position((width/2 - btnWidth/2), height - 170);
+    btnPlay.position((width/2 - btnWidth/2), height - 100);
     btnPlay.addClass("myButton");
     btnPlay.mousePressed(handleTogglePlay);
     btnPlay.html("Play");
